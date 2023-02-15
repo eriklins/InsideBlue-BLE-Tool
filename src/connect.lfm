@@ -1,0 +1,59 @@
+object DeviceForm: TDeviceForm
+  Left = 38
+  Height = 320
+  Top = 938
+  Width = 432
+  Caption = 'Connect Device...'
+  ClientHeight = 320
+  ClientWidth = 432
+  Color = clWhite
+  Constraints.MinHeight = 320
+  OnClose = FormClose
+  OnCreate = FormCreate
+  LCLVersion = '2.3.0.0'
+  object LabelMacAddress: TLabel
+    Left = 8
+    Height = 15
+    Top = 40
+    Width = 184
+    Caption = 'MAC Address [AA:BB:CC:DD:EE:FF]'
+    ParentFont = False
+  end
+  object TextBoxDeviceName: TEdit
+    Left = 8
+    Height = 28
+    Top = 8
+    Width = 248
+    AutoSelect = False
+    Font.Height = -15
+    Font.Style = [fsBold]
+    ParentFont = False
+    ReadOnly = True
+    TabOrder = 0
+    Text = 'TextBoxDeviceName'
+  end
+  object ScrollBoxGatt: TScrollBox
+    Left = 0
+    Height = 256
+    Top = 64
+    Width = 432
+    HorzScrollBar.Page = 1
+    VertScrollBar.Increment = 32
+    VertScrollBar.Page = 1
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = clMenu
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 1
+  end
+  object ButtonDisconnect: TButton
+    Left = 329
+    Height = 26
+    Top = 8
+    Width = 95
+    Anchors = [akTop, akRight]
+    Caption = 'Disconnect'
+    OnClick = ButtonDisconnectClick
+    TabOrder = 2
+  end
+end

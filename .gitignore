@@ -1,0 +1,4 @@
+**/bin
+**/lib
+**/release_packages
+*.lps

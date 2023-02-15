@@ -1,0 +1,29 @@
+object HelpForm: THelpForm
+  Left = 488
+  Height = 480
+  Top = 888
+  Width = 440
+  Caption = 'InsideBlue BLE Tool - Help'
+  ClientHeight = 480
+  ClientWidth = 440
+  Color = clWhite
+  OnClose = FormClose
+  OnCreate = FormCreate
+  LCLVersion = '2.3.0.0'
+  object RichMemoHelp: TRichMemo
+    Left = 8
+    Height = 480
+    Top = 0
+    Width = 432
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderStyle = bsNone
+    HideSelection = False
+    Lines.Strings = (
+      'RichMemo1'
+    )
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 0
+    ZoomFactor = 1
+  end
+end
