@@ -36,14 +36,21 @@ When connecting to a device, a new device specific window opens and the GATT tab
 
 If the UUID of a service, characteristic or descriptor is in the official Bluetooth list of assigned numbers, the name will be shown. You can hover with the mouse over the name to see the underlying UUID number.
 
-Depending on the properties of each characteristic different buttons get added to the text field. Those are Read, WriteCommand, WriteRequest, Notify and Indicate. Data from/to a characteristic gets displayed or entered into a text field, which is either read/write or read only. You can switch the presentation between HEX numbers or ASCII string. When set to ASCII, non-printable characters are displayed as a black square.
+Depending on the properties of each characteristic different buttons get added to the text field. Those are Read, WriteCommand, WriteRequest, Notify and Indicate.
+
+Data from/to a characteristic gets displayed or entered into a text field, which is either read/write or read only. You can switch the presentation between HEX numbers or ASCII string. When set to ASCII, non-printable characters are displayed as a black square.
 
 ## Limitations
-Since InsideBlue leverages the PC’s integrated Bluetooth Controller, this ultimately limits what’s achievable from a BT hardware perspective (e.g., number of simultaneous connections).
-It is not possible to tweak BLE settings like scan interval and/or scan window or similar low-level BLE parameters.
-Pairing of BLE devices is not yet implmented.
-Due to a limitation of the underlying BLE library, it’s not possible to properly receive notifications or indications from devices exposing an identcal GATT table (i.e. identical service/characteristic UUIDs).
-The underlying BLE library does not yet expose properties of the descriptors and hence it’s not yet possible to directly read/write them.
+- Since InsideBlue leverages the PC’s integrated Bluetooth Controller, this ultimately limits what’s achievable from a BT hardware perspective (e.g., number of simultaneous connections).
+- It is not possible to tweak BLE settings like scan interval and/or scan window or similar low-level BLE parameters.
+- Pairing of BLE devices is not yet implmented.
+- Due to a limitation of the underlying BLE library, it’s not possible to properly receive notifications or indications from devices exposing an identcal GATT table (i.e. identical service/characteristic UUIDs).
+- The underlying BLE library does not yet expose properties of the descriptors and hence it’s not yet possible to directly read/write them.
+
+## Releases / Installation
+You can download a ZIP with pre-built binaries for Windows 64 bit from the [releases tab](https://github.com/eriklins/InsideBlue-BLE-Tool/releases). 
+
+InsideBlue BLE Tool does not require any installation. Just unzip anywhere and run. The ZIP includes the executable, two dll files and a help file.
 
 ## Building InsideBlue BLE Tool
 This project is implemented with the [Lazarus IDE](https://www.lazarus-ide.org/) and [FreePascal](https://www.freepascal.org/). Lazarus is a free Delphi compatible cross-platform IDE for Rapid Application Development. Free Pascal is a mature, versatile, open source Pascal compiler.
