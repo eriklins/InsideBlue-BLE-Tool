@@ -1,7 +1,7 @@
 # InsideBlue BLE Tool
 Welcome to **InsideBlue BLE Tool**, an easy to use cross-platform application for Bluetooth Low-Energy (BLE) connectivity leveraging the PC’s integrated Bluetooth adapter.
 
-You can scan for BLE devices that are advertising and discover their GAP services or manufacturer specific payload, engage a connection and access the peripheral GATT table.
+You can scan for BLE devices that are advertising and discover their GAP services or manufacturer specific data, engage a connection and access the peripheral GATT table.
 
 ## Main Scan Window
 After start the main scan window opens and provides common controls for BLE device discovery.
@@ -56,6 +56,8 @@ InsideBlue BLE Tool does not require any installation. Just unzip anywhere and r
 This project is implemented with the [Lazarus IDE](https://www.lazarus-ide.org/) and [FreePascal](https://www.freepascal.org/). Lazarus is a free Delphi compatible cross-platform IDE for Rapid Application Development. Free Pascal is a mature, versatile, open source Pascal compiler.
 
 InsideBlue BLE Tool was built with Lazarus IDE v2.3.0 (trunk) and FreePascal 3.2.2 on Windows 10 x86_64.
+
+Since both Lazarus/FreePascal as well as the SimpleBLE library are cross-platform, Linux and Mac OS versions of InsideBlue BLE Tool should be possible. Looking into that...
 
 ## BLE Library
 Inside Blue BLE Tool is based on the SimpleBLE library (https://github.com/OpenBluetoothToolbox/SimpleBLE) and uses the Pascal bindings for that library (https://github.com/eriklins/Pascal-Bindings-For-SimpleBLE-Library).
