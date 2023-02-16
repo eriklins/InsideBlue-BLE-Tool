@@ -290,11 +290,18 @@ begin
             LogOutput.Append('ServicesCount too large [' + PeripheralScanData[DevIdx].MacAddress + ']')  // need to check on this...
           else
             for i := 0 to PeripheralScanData[DevIdx].ServicesCount -1 do begin
-              SetString(s, PeripheralScanData[DevIdx].Services[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN);
+              SetString(s, PeripheralScanData[DevIdx].Services[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
               n := BleAssignedServiceUuidToName(s);
-              if n = '' then
-                PeripheralScanPanel[DevIdx].LabelServices[i].Caption  := 'Service: ' + s
-              else begin
+              if n = '' then begin
+                n := BleVspServiceUuidToName(s);
+                if n = '' then
+                  PeripheralScanPanel[DevIdx].LabelServices[i].Caption  := 'Service: ' + s
+                else begin
+                  PeripheralScanPanel[DevIdx].LabelServices[i].Caption  := 'Service: ' + n;
+                  PeripheralScanPanel[DevIdx].LabelServices[i].ShowHint := true;
+                  PeripheralScanPanel[DevIdx].LabelServices[i].Hint     := s;
+                end;
+              end else begin
                 PeripheralScanPanel[DevIdx].LabelServices[i].Caption  := 'Service: ' + n;
                 PeripheralScanPanel[DevIdx].LabelServices[i].ShowHint := true;
                 PeripheralScanPanel[DevIdx].LabelServices[i].Hint     := s;

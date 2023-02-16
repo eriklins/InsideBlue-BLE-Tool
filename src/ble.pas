@@ -7,17 +7,58 @@ interface
 uses
   Classes, SysUtils, Dialogs, SimpleBle, AssignedNumbers;
 
+type
+  TVspServiceUuids = record
+    Uuid:    String;
+    Name:    String;
+    RxIdx:   Integer;  // data TO the device
+    TxIdx:   Integer;  // data FROM the device
+    MInIdx:  Integer;  // control TO the device
+    MoutIdx: Integer;  // control FROM the device
+  end;
+
+  TVspCharacteristicUuids = record
+    Uuid: String;
+    Name: String;
+  end;
+
+  TVspTerminal = record
+    ServiceFound: Boolean;
+    RxIdx:        Integer;  // data TO the device
+    TxIdx:        Integer;  // data FROM the device
+    MInIdx:       Integer;  // control TO the device
+    MoutIdx:      Integer;  // control FROM the device
+  end;
+
   procedure BleInit;
   function BleAssignedServiceUuidToName(uuid: String): String;
   function BleAssignedCharacteristicUuidToName(uuid: String): String;
   function BleAssignedDescriptorUuidToName(uuid: String): String;
   function BleAssignedCompanyIdToName(code: String): String;
+  function BleVspServiceUuidToName(uuid: String): String;
+  function BleVspCharacteristicUuidToName(uuid: String): String;
+
+const
+  VspServiceUuids: array of TVspServiceUuids = (  // proprietary ble uart services
+    (Uuid: '569a1101-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Connectivity VSP Service'; RxIdx: 0; TxIdx: 1; MInIdx: 2; MOutIdx: 3),
+    (Uuid: '6e400001-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'Nordic UART Service (NUS)';      RxIdx: 4; TxIdx: 5; MInIdx: -1; MOutIdx: -1)
+  );
+
+  VspCharacteristicUuids: array of TVspCharacteristicUuids = (  // proprietary ble uart services
+    (Uuid: '569a2001-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp RX'),
+    (Uuid: '569a2000-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp Tx'),
+    (Uuid: '569a2003-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp ModemIn'),
+    (Uuid: '569a2002-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp ModemOut'),
+    (Uuid: '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'NUS Rx'),
+    (Uuid: '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'NUS TX')
+  );
 
 var
   BleAdapter: TSimplebleAdapter;
   SimpleBleErr: TSimpleBleErr;
   BleAdapterIsInitialized: Boolean;
   BleIsEnabled: Boolean;
+  BleVspTerminal: TVspTerminal;
 
 
 implementation
@@ -62,7 +103,7 @@ function BleAssignedServiceUuidToName(uuid: String): String;
 var
   i: Integer;
 begin
-  for i := 0 to Length(ServiceUuids)-1 do begin
+  for i := 0 to Length(ServiceUuids)-1 do begin  // check official service uuids
     if (ServiceUuids[i].Uuid = uuid) or (ServiceUuids[i].Uuid = Copy(uuid, 5, 4)) then begin
       Result := ServiceUuids[i].Name;
       Exit;
@@ -110,6 +151,41 @@ begin
   for i := 0 to Length(CompanyIds)-1 do begin
     if CompanyIds[i].code = code then begin
       Result := CompanyIds[i].Name;
+      Exit;
+    end;
+  end;
+  Result := '';
+end;
+
+
+{ Convert 128 bit vsp service uuid to name }
+function BleVspServiceUuidToName(uuid: String): String;
+var
+  i: Integer;
+begin
+  for i := 0 to Length(VspServiceUuids)-1 do begin  // check proprietary uart service uuids
+    if (VspServiceUuids[i].Uuid = uuid) or (VspServiceUuids[i].Uuid = Copy(uuid, 5, 4)) then begin
+      BleVspTerminal.RxIdx        := VspServiceUuids[i].RxIdx;
+      BleVspTerminal.TxIdx        := VspServiceUuids[i].TxIdx;
+      BleVspTerminal.MInIdx       := VspServiceUuids[i].MInIdx;
+      BleVspTerminal.MoutIdx      := VspServiceUuids[i].MoutIdx;
+      BleVspTerminal.ServiceFound := true;
+      Result := VspServiceUuids[i].Name;
+      Exit;
+    end;
+  end;
+  Result := '';
+end;
+
+
+{ Convert 128 bit vsp characteristics uuid to name }
+function BleVspCharacteristicUuidToName(uuid: String): String;
+var
+  i: Integer;
+begin
+  for i := 0 to Length(VspCharacteristicUuids)-1 do begin  // check proprietary uart service uuids
+    if (VspCharacteristicUuids[i].Uuid = uuid) or (VspCharacteristicUuids[i].Uuid = Copy(uuid, 5, 4)) then begin
+      Result := VspCharacteristicUuids[i].Name;
       Exit;
     end;
   end;

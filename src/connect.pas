@@ -83,11 +83,12 @@ type
     Characteristic:         array of array of TCharDescData;
     Descriptor:             array of array of array of TCharDescData;
     IsConnected:            Boolean;
+    VspTerminal:            TVspTerminal;
   end;
 
 const
   CharDescMaxLength = 512;
-  DeviceFormPaddingVertical   = 8;
+  DeviceFormPaddingVertical   = 6;
   DeviceFormPaddingHorizontal = 8;
   DeviceFormPropPadding       = 4;
   CanRead         = 0;
@@ -240,10 +241,16 @@ begin
       NextElementVertical := DeviceFormPaddingVertical;
       SimpleBlePeripheralServicesGet(ConnDevicesData[i].PeripheralHandle, SvIdx, ConnDevicesData[i].Services[SvIdx]);
       SetString(s, ConnDevicesData[i].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
+
+      // look for assigned service numbers or proprietary vsp services
       n := BleAssignedServiceUuidToName(s);
-      if n = '' then
-        ScanForm.LogOutput.Append('     SV: ' + s)
-      else
+      if n = '' then begin
+        n := BleVspServiceUuidToName(s);
+        if n = '' then
+          ScanForm.LogOutput.Append('     SV: ' + s)
+        else
+          ScanForm.LogOutput.Append('     SV: ' + s + ' (' + n + ')');
+      end else
         ScanForm.LogOutput.Append('     SV: ' + s + ' (' + n + ')');
 
       // show service uuid
@@ -277,15 +284,21 @@ begin
           SetLength(ConnDevicesData[i].Characteristic[SvIdx][ChIdx].data, CharDescMaxLength);
           SetString(s, ConnDevicesData[i].Services[SvIdx].Characteristics[ChIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
           n := BleAssignedCharacteristicUuidToName(s);
-          if n = '' then
-            ScanForm.LogOutput.Append('         CH: ' + s)
-          else
+          if n = '' then begin
+            n := BleVspCharacteristicUuidToName(s);
+            if n = '' then
+              ScanForm.LogOutput.Append('         CH: ' + s)
+          end else begin
             ScanForm.LogOutput.Append('         CH: ' + s + ' (' + n + ')');
+          end;
 
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx]            := TLabel.Create(DeviceForm[i]);
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Parent     := DeviceFormElements[i].Panel[SvIdx];
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Top        := NextElementVertical;
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Left       := 3*DeviceFormPaddingHorizontal;
+          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].AutoSize   := false;
+          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Width      := 248;
+          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Height     := 18;
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Font.Size  := 10;
           if n = '' then
             DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Caption  := UpperCase(s)
@@ -421,6 +434,9 @@ begin
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Parent     := DeviceFormElements[i].Panel[SvIdx];
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Top        := NextElementVertical;
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Left       := 5*DeviceFormPaddingHorizontal;
+              DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].AutoSize   := false;
+              DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Width      := 248;
+              DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Height     := 18;
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Font.Size  := 10;
               if n = '' then
                 DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Caption  := UpperCase(s)
@@ -461,8 +477,8 @@ begin
       NextPanelVertical := DeviceFormElements[i].Panel[SvIdx].Top + NextElementVertical + 2*DeviceFormPaddingVertical;
     end;
   end;
-  DeviceForm[i].Height := NextPanelVertical + 9*DeviceFormPaddingVertical;
-  DeviceForm[i].Constraints.MaxHeight := NextPanelVertical + 9*DeviceFormPaddingVertical;
+  DeviceForm[i].Height := NextPanelVertical + 12*DeviceFormPaddingVertical;
+  DeviceForm[i].Constraints.MaxHeight := NextPanelVertical + 12*DeviceFormPaddingVertical;
 end;
 
 
