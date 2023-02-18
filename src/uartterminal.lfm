@@ -1,0 +1,8 @@
+object TerminalForm: TTerminalForm
+  Left = 200
+  Height = 541
+  Top = 393
+  Width = 806
+  Caption = 'Virtual Uart Terminal'
+  LCLVersion = '2.3.0.0'
+end
