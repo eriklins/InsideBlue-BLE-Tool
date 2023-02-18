@@ -241,7 +241,7 @@ begin
             PeripheralScanPanel[DevIdx].CheckBoxHexAscii.Parent  := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].CheckBoxHexAscii.Caption := 'View as ASCII';
             PeripheralScanPanel[DevIdx].CheckBoxHexAscii.Top     := PeripheralScanPanel[DevIdx].LabelManufData.Top;
-            PeripheralScanPanel[DevIdx].CheckBoxHexAscii.Left    := PeripheralScanPanel[DevIdx].LabelManufData.Left + PeripheralScanPanel[DevIdx].LabelManufData.Width + (16*ScanPanelPaddingHorizontal);
+            PeripheralScanPanel[DevIdx].CheckBoxHexAscii.Left    := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].CheckBoxHexAscii.Width - 2*ScanPanelPaddingVertical;
             PeripheralScanPanel[DevIdx].CheckBoxHexAscii.Tag     := DevIdx;
             PeripheralScanPanel[DevIdx].CheckBoxHexAscii.OnClick := @ScanForm.CheckBoxHexAsciiClick;
             PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].LabelManufData.Top + PeripheralScanPanel[DevIdx].LabelManufData.Height + 2*ScanPanelPaddingVertical;

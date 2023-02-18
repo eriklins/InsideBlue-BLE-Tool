@@ -187,7 +187,6 @@ end;
 procedure ScanClearPeripheralList;
 var
   i: Integer;
-  c: Boolean;
 begin
   // delete peripheral scan data and release ble peripheral handles
   for i := 0 to PeripheralNofDevices-1 do begin

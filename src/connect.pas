@@ -103,6 +103,13 @@ const
   TagPosSrv = 16;
   TagPosChr = 8;
   TagPosDes = 0;
+  {$IFDEF UNIX}
+    FormElementsExtraHeight = 4;
+    FormElementsExtraWidth  = 8;
+  {$ELSE}
+    FormElementsExtraHeight = 0;
+    FormElementsExtraWidth  = 0;
+  {$ENDIF}
 
 var
   DeviceForm: array of TDeviceForm;
@@ -355,13 +362,13 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Width      := 4*DeviceFormPaddingHorizontal;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Height     := 20;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Font.Size  := 8;
             //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Caption    := 'RD';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].OnChange   := @DeviceForm[i].ButtonCharRead;
-            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + DeviceFormPropPadding;
+            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
 
             // read characteristic value, store into device record and display in text box
             SimpleBlePeripheralRead(ConnDevicesData[i].PeripheralHandle, ConnDevicesData[i].Services[SvIdx].Uuid,
@@ -379,13 +386,13 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Width      := 4*DeviceFormPaddingHorizontal;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Height     := 20;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Font.Size  := 8;
             //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Caption    := 'WRc';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].OnChange   := @DeviceForm[i].ButtonCharWriteCommand;
-            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + DeviceFormPropPadding;
+            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
             DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].OnEditingDone := @DeviceForm[i].CharEditingDone;
           end;
           if ConnDevicesData[i].Services[SvIdx].Characteristics[ChIdx].CanWriteRequest then begin
@@ -395,13 +402,13 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Width      := 4*DeviceFormPaddingHorizontal;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Height     := 20;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Font.Size  := 8;
             //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Caption    := 'WRr';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].OnChange   := @DeviceForm[i].ButtonCharWriteRequest;
-            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + DeviceFormPropPadding;
+            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
             DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].OnEditingDone := @DeviceForm[i].CharEditingDone;
           end;
           if ConnDevicesData[i].Services[SvIdx].Characteristics[ChIdx].CanNotify then begin
@@ -410,13 +417,13 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Width      := 4*DeviceFormPaddingHorizontal;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Height     := 20;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Font.Size  := 8;
             //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Caption    := 'NOT';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].OnChange   := @DeviceForm[i].ButtonCharNotify;
-            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + DeviceFormPropPadding;
+            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
           end;
           if ConnDevicesData[i].Services[SvIdx].Characteristics[ChIdx].CanIndicate then begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate]            := TToggleBox.Create(DeviceForm[i]);
@@ -424,13 +431,13 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Width      := 4*DeviceFormPaddingHorizontal;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Height     := 20;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Font.Size  := 8;
             //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Caption    := 'IND';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].OnChange   := @DeviceForm[i].ButtonCharIndicate;
-            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + DeviceFormPropPadding;
+            NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
           end;
 
           if ConnDevicesData[i].Services[SvIdx].Characteristics[ChIdx].DescriptorCount > 0 then begin
@@ -471,7 +478,7 @@ begin
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Font.Size := 10;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].MaxLength := 4;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].AutoSize  := false;
-              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Width     := 40;
+              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Width     := 56;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height    := 20;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Color     := clForm;
               NextElementVertical := DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Top + DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height + DeviceFormPaddingVertical div 2;
