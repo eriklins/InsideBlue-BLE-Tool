@@ -17,6 +17,7 @@ type
     LabelDeviceConnectable: TLabel;
     LabelTxPower:           TLabel;
     LabelRssi:              TLabel;
+    LabelPaired:            TLabel;
     LabelMacAddress:        TLabel;
     LabelServices:          array of TLabel;
     LabelManufData:         TLabel;
@@ -182,27 +183,36 @@ begin
           PeripheralScanPanel[DevIdx].LabelTxPower           := TLabel.Create(ScanForm);
           PeripheralScanPanel[DevIdx].LabelTxPower.Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
           PeripheralScanPanel[DevIdx].LabelTxPower.Top       := PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Top;
-          PeripheralScanPanel[DevIdx].LabelTxPower.Left      := PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Left + PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Width + (4*ScanPanelPaddingHorizontal);
+          PeripheralScanPanel[DevIdx].LabelTxPower.Left      := PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Left + PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Width + (3*ScanPanelPaddingHorizontal);
           PeripheralScanPanel[DevIdx].LabelTxPower.Font.Size := 10;
           PeripheralScanPanel[DevIdx].LabelTxPower.Caption   := 'TX Power: n/a';  // placeholder for proper positioning of further elements
 
           PeripheralScanPanel[DevIdx].LabelRssi           := TLabel.Create(ScanForm);
           PeripheralScanPanel[DevIdx].LabelRssi.Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
           PeripheralScanPanel[DevIdx].LabelRssi.Top       := PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Top;
-          PeripheralScanPanel[DevIdx].LabelRssi.Left      := PeripheralScanPanel[DevIdx].LabelTxPower.Left + PeripheralScanPanel[DevIdx].LabelTxPower.Width + (4*ScanPanelPaddingHorizontal);
+          PeripheralScanPanel[DevIdx].LabelRssi.Left      := PeripheralScanPanel[DevIdx].LabelTxPower.Left + PeripheralScanPanel[DevIdx].LabelTxPower.Width + (3*ScanPanelPaddingHorizontal);
           PeripheralScanPanel[DevIdx].LabelRssi.Font.Size := 10;
           PeripheralScanPanel[DevIdx].LabelRssi.Caption   := 'RSSI: -99 dBm';  // placeholder for proper positioning of further elements
 
+          if PeripheralScanData[DevIdx].IsPaired then begin
+            PeripheralScanPanel[DevIdx].LabelPaired           := TLabel.Create(ScanForm);
+            PeripheralScanPanel[DevIdx].LabelPaired.Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
+            PeripheralScanPanel[DevIdx].LabelPaired.Top       := PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Top;
+            PeripheralScanPanel[DevIdx].LabelPaired.Left      := PeripheralScanPanel[DevIdx].LabelRssi.Left + PeripheralScanPanel[DevIdx].LabelRssi.Width + (3*ScanPanelPaddingHorizontal);
+            PeripheralScanPanel[DevIdx].LabelPaired.Font.Size := 10;
+            PeripheralScanPanel[DevIdx].LabelPaired.Caption   := 'Paired';  // placeholder for proper positioning of further elements
+          end;
+
           PeripheralScanPanel[DevIdx].LabelMacAddress           := TLabel.Create(ScanForm);
           PeripheralScanPanel[DevIdx].LabelMacAddress.Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
-          PeripheralScanPanel[DevIdx].LabelMacAddress.Top       := PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Top + PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Height + Trunc(ScanPanelPaddingVertical/2);
+          PeripheralScanPanel[DevIdx].LabelMacAddress.Top       := PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Top + PeripheralScanPanel[DevIdx].LabelDeviceConnectable.Height + ScanPanelPaddingVertical div 2;
           PeripheralScanPanel[DevIdx].LabelMacAddress.Left      := ScanPanelPaddingHorizontal;
           PeripheralScanPanel[DevIdx].LabelMacAddress.Font.Size := 10;
           PeripheralScanPanel[DevIdx].LabelMacAddress.Caption   := 'MAC Address:';  // placeholder for proper positioning of further elements
 
           PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].LabelMacAddress.Top + PeripheralScanPanel[DevIdx].LabelMacAddress.Height + 2*ScanPanelPaddingVertical;
 
-          j := PeripheralScanPanel[DevIdx].LabelMacAddress.Top + PeripheralScanPanel[DevIdx].LabelMacAddress.Height + Trunc(ScanPanelPaddingVertical/2);
+          j := PeripheralScanPanel[DevIdx].LabelMacAddress.Top + PeripheralScanPanel[DevIdx].LabelMacAddress.Height + ScanPanelPaddingVertical div 2;
 
           // if we have advertised services we add lebels for each
           if PeripheralScanData[DevIdx].ServicesCount > 0 then begin
@@ -214,7 +224,7 @@ begin
               PeripheralScanPanel[DevIdx].LabelServices[i].Top       := j;
               PeripheralScanPanel[DevIdx].LabelServices[i].Left      := ScanPanelPaddingHorizontal;
               PeripheralScanPanel[DevIdx].LabelServices[i].Font.Size := 10;
-              j := PeripheralScanPanel[DevIdx].LabelServices[i].Top + PeripheralScanPanel[DevIdx].LabelServices[i].Height + Trunc(ScanPanelPaddingVertical/2);
+              j := PeripheralScanPanel[DevIdx].LabelServices[i].Top + PeripheralScanPanel[DevIdx].LabelServices[i].Height + ScanPanelPaddingVertical div 2;
             end;
             PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].LabelServices[i].Top + PeripheralScanPanel[DevIdx].LabelServices[i].Height + 2*ScanPanelPaddingVertical;
           end;
@@ -224,7 +234,7 @@ begin
             PeripheralScanPanel[DevIdx].LabelManufData           := TLabel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].LabelManufData.Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].LabelManufData.Caption   := 'Manufacturer Specific Data:';
-            PeripheralScanPanel[DevIdx].LabelManufData.Top       := j;//PeripheralScanPanel[DevIdx].LabelMacAddress.Top + (i+1) * (PeripheralScanPanel[DevIdx].LabelMacAddress.Height + Trunc(ScanPanelPaddingVertical/2));
+            PeripheralScanPanel[DevIdx].LabelManufData.Top       := j;
             PeripheralScanPanel[DevIdx].LabelManufData.Left      := ScanPanelPaddingHorizontal;
             PeripheralScanPanel[DevIdx].LabelManufData.Font.Size := 10;
             PeripheralScanPanel[DevIdx].CheckBoxHexAscii         := TCheckBox.Create(ScanForm);
@@ -248,7 +258,7 @@ begin
             PeripheralScanPanel[DevIdx].LabelManufDataId[i]           := TLabel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption   := 'ID=0xFFFF';  // placeholder for proper positioning of further elements
-            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Top       := PeripheralScanPanel[DevIdx].LabelManufData.Top + 2 + ((i+1) * PeripheralScanPanel[DevIdx].LabelManufData.Height + (i+1) * Trunc(ScanPanelPaddingVertical/2) + i * Trunc(ScanPanelPaddingVertical/2));
+            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Top       := PeripheralScanPanel[DevIdx].LabelManufData.Top + 2 + (i+1) * PeripheralScanPanel[DevIdx].LabelManufData.Height + (2*i+1) * (ScanPanelPaddingVertical div 2);
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Left      := ScanPanelPaddingHorizontal;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].AutoSize  := false;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Width     := 72;
@@ -257,7 +267,7 @@ begin
             PeripheralScanPanel[DevIdx].TextBoxManufData[i]           := TEdit.Create(ScanForm);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].ReadOnly  := True;
-            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top       := PeripheralScanPanel[DevIdx].LabelManufData.Top + 2 + ((i+1) * PeripheralScanPanel[DevIdx].LabelManufData.Height + (i+1) * Trunc(ScanPanelPaddingVertical/2) + i * Trunc(ScanPanelPaddingVertical/2));
+            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top       := PeripheralScanPanel[DevIdx].LabelManufData.Top + 2 + (i+1) * PeripheralScanPanel[DevIdx].LabelManufData.Height + (2*i+1) * (ScanPanelPaddingVertical div 2);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Left      := PeripheralScanPanel[DevIdx].LabelManufDataId[i].Width + (2*ScanPanelPaddingHorizontal);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].LabelManufDataId[i].Width - (3*ScanPanelPaddingHorizontal);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].AutoSize  := false;
@@ -398,6 +408,7 @@ begin
     ButtonClear.Enabled := false;
     ButtonStartScan.Caption := 'Stop Scan';
     LabelNofDevices.Caption := IntToStr(PeripheralNofDevices) + ' Devices Found';
+    //ShowMessage('#paired=' + IntToStr(SimpleBleAdapterGetPairedPeripheralsCount(BleAdapter)));
     SimpleBleAdapterScanStart(BleAdapter);
   end else begin
     FlagBleScanningActive := false;
@@ -407,6 +418,7 @@ begin
     ButtonClear.Enabled := true;
     ButtonStartScan.Caption := 'Start Scan';
     LabelNofDevices.Caption := 'Press Start Scan to Discover Devices...';
+    //ShowMessage('#paired=' + IntToStr(SimpleBleAdapterGetPairedPeripheralsCount(BleAdapter)));
     SimpleBleAdapterScanStop(BleAdapter);
   end;
 

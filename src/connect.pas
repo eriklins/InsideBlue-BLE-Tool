@@ -17,6 +17,7 @@ type
     TextBoxDeviceName: TEdit;
     LabelMacAddress: TLabel;
     procedure ButtonDisconnectClick(Sender: TObject);
+    procedure ButtonVspTerminalClick(Sender: TObject);
     procedure ButtonCharRead(Sender: TObject);
     procedure ButtonCharWriteCommand(Sender: TObject);
     procedure ButtonCharWriteRequest(Sender: TObject);
@@ -36,14 +37,15 @@ type
 
   { Form elements to show device GATT structure }
   TDeviceFormElements = record
-    Panel: array of TPanel;
-    LabelServiceUuid: array of TLabel;
+    Panel:                   array of TPanel;
+    LabelServiceUuid:        array of TLabel;
+    ButtonVspTerminal:       array of TButton;
     LabelCharacteristicUuid: array of array of TLabel;
-    LabelDescriptorUuid: array of array of array of TLabel;
-    TextBoxCharacteristic: array of array of TEdit;
-    CheckBoxHexAscii: array of array of TCheckBox;
-    TextBoxDescriptor: array of array of array of TEdit;
-    ToggleBoxCharProp: array of array of array [0..4] of TToggleBox;
+    LabelDescriptorUuid:     array of array of array of TLabel;
+    TextBoxCharacteristic:   array of array of TEdit;
+    CheckBoxHexAscii:        array of array of TCheckBox;
+    TextBoxDescriptor:       array of array of array of TEdit;
+    ToggleBoxCharProp:       array of array of array [0..4] of TToggleBox;
   end;
 
   TArrayOfByte = array of Byte;
@@ -83,7 +85,8 @@ type
     Characteristic:         array of array of TCharDescData;
     Descriptor:             array of array of array of TCharDescData;
     IsConnected:            Boolean;
-    VspTerminal:            TVspTerminal;
+    IsPaired:               Boolean;
+    VspTerminal:            array of TVspTerminal;
   end;
 
 const
@@ -105,7 +108,7 @@ var
   DeviceForm: array of TDeviceForm;
   DeviceFormElements: array of TDeviceFormElements;
   ConnDevicesData: array of TDeviceData;
-  ConnDevicesCount: Integer;
+
 
 { initialize connect unit }
 procedure ConnectInit;
@@ -166,6 +169,7 @@ begin
   ConnDevicesData[i].MacAddress       := PeripheralScanData[ScIdx].MacAddress;
   ConnDevicesData[i].PeripheralHandle := PeripheralScanData[ScIdx].PeripheralHandle;
 
+  // register on connect callback function
   SimpleBlePeripheralSetCallbackOnDisconnected(ConnDevicesData[i].PeripheralHandle, @DeviceOnDisconnect, Nil);
 
   // mark device in scan data as connected
@@ -219,8 +223,10 @@ begin
     SetLength(ConnDevicesData[i].Services,                   ConnDevicesData[i].ServicesCount);
     SetLength(ConnDevicesData[i].Characteristic,             ConnDevicesData[i].ServicesCount);
     SetLength(ConnDevicesData[i].Descriptor,                 ConnDevicesData[i].ServicesCount);
+    SetLength(ConnDevicesData[i].VspTerminal,                ConnDevicesData[i].ServicesCount);
     SetLength(DeviceFormElements[i].Panel,                   ConnDevicesData[i].ServicesCount);
     SetLength(DeviceFormElements[i].LabelServiceUuid,        ConnDevicesData[i].ServicesCount);
+    SetLength(DeviceFormElements[i].ButtonVspTerminal,       ConnDevicesData[i].ServicesCount);
     SetLength(DeviceFormElements[i].LabelCharacteristicUuid, ConnDevicesData[i].ServicesCount);
     SetLength(DeviceFormElements[i].LabelDescriptorUuid,     ConnDevicesData[i].ServicesCount);
     SetLength(DeviceFormElements[i].TextBoxCharacteristic,   ConnDevicesData[i].ServicesCount);
@@ -246,11 +252,13 @@ begin
       n := BleAssignedServiceUuidToName(s);
       if n = '' then begin
         n := BleVspServiceUuidToName(s);
-        if n = '' then
+        if n = '' then  // neither assigned service nor vsp service
           ScanForm.LogOutput.Append('     SV: ' + s)
-        else
+        else begin // vsp service
           ScanForm.LogOutput.Append('     SV: ' + s + ' (' + n + ')');
-      end else
+          ConnDevicesData[i].VspTerminal[SvIdx].ServiceFound := true;
+        end;
+      end else  // assigned service
         ScanForm.LogOutput.Append('     SV: ' + s + ' (' + n + ')');
 
       // show service uuid
@@ -261,12 +269,20 @@ begin
       DeviceFormElements[i].LabelServiceUuid[SvIdx].Left       := DeviceFormPaddingHorizontal;
       DeviceFormElements[i].LabelServiceUuid[SvIdx].Font.Size  := 11;
       DeviceFormElements[i].LabelServiceUuid[SvIdx].Font.Style := [fsBold];
-      if n = '' then
+      if not ConnDevicesData[i].VspTerminal[SvIdx].ServiceFound then
         DeviceFormElements[i].LabelServiceUuid[SvIdx].Caption  := UpperCase(s)
       else begin
         DeviceFormElements[i].LabelServiceUuid[SvIdx].Caption  := n;
         DeviceFormElements[i].LabelServiceUuid[SvIdx].ShowHint := true;
         DeviceFormElements[i].LabelServiceUuid[SvIdx].Hint     := s;
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx]         := TButton.Create(DeviceForm[i]);
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Parent  := DeviceFormElements[i].Panel[SvIdx];
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Tag     := (i shl TagPosDev) or (SvIdx shl TagPosSrv);
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Top     := DeviceFormElements[i].LabelServiceUuid[SvIdx].Top;
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Left    := DeviceFormElements[i].Panel[SvIdx].Width - 64 - DeviceFormPaddingHorizontal;
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Width   := 64;
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Caption := 'Terminal';
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].OnClick := @DeviceForm[i].ButtonVspTerminalClick;
       end;
       NextElementVertical := DeviceFormElements[i].LabelServiceUuid[SvIdx].Top + DeviceFormElements[i].LabelServiceUuid[SvIdx].Height + DeviceFormPaddingVertical div 2;
 
@@ -290,6 +306,7 @@ begin
               ScanForm.LogOutput.Append('         CH: ' + s)
           end else begin
             ScanForm.LogOutput.Append('         CH: ' + s + ' (' + n + ')');
+            // TODO: maybe adding a button for VSP terminal here...
           end;
 
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx]            := TLabel.Create(DeviceForm[i]);
@@ -311,7 +328,7 @@ begin
 
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx]           := TEdit.Create(DeviceForm[i]);
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Parent    := DeviceFormElements[i].Panel[SvIdx];
-          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Tag       := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);;
+          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Tag       := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top       := NextElementVertical;
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Left      := 3*DeviceFormPaddingHorizontal;
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Font.Size := 10;
@@ -533,6 +550,19 @@ var
 begin
   idx := TForm(Sender).Tag;
   DeviceForm[idx].Close;  // this automatically forces TDeviceForm.FormClose()
+end;
+
+
+{ Open vsp terminal }
+procedure TDeviceForm.ButtonVspTerminalClick(Sender: TObject);
+var
+  i, DeIdx, SvIdx, ChIdx: Integer;
+begin
+  i := TCheckBox(Sender).Tag;
+  DeIdx := (i shr TagPosDev) and $ff;
+  SvIdx := (i shr TagPosSrv) and $ff;
+  ChIdx := (i shr TagPosChr) and $ff;
+  ShowMessage('Opening uart terminal... sometimes. :o)');
 end;
 
 

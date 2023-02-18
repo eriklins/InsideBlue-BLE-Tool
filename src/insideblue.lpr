@@ -16,7 +16,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Dialogs, Main, Help, SimpleBle, assignednumbers;
+  Forms, Dialogs, Main, Help, SimpleBle, assignednumbers, uartterminal;
 
 {$R *.res}
 
@@ -34,6 +34,7 @@ begin
 
   Application.CreateForm(TScanForm, ScanForm);
   Application.CreateForm(THelpForm, HelpForm);
+  Application.CreateForm(TTerminalForm, TerminalForm);
   Application.Run;
 end.
 

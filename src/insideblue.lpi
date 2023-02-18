@@ -82,6 +82,12 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="SynEditDsgn"/>
+      </Item>
+      <Item>
+        <PackageName Value="SynEdit"/>
+      </Item>
+      <Item>
         <PackageName Value="richmemopackage"/>
       </Item>
       <Item>
@@ -137,6 +143,14 @@
         <Filename Value="assignednumbers.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="AssignedNumbers"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uartterminal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TerminalForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UartTerminal"/>
       </Unit>
     </Units>
   </ProjectOptions>

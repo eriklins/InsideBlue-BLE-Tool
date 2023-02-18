@@ -16,6 +16,7 @@ type
     DeviceName:             String;
     MacAddress:             String;
     IsConnectable:          Boolean;
+    IsPaired:               Boolean;
     TxPower:                Integer;
     Rssi:                   Integer;
     ServicesCount:          Integer;

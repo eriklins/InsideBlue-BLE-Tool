@@ -39,13 +39,14 @@ type
   function BleVspCharacteristicUuidToName(uuid: String): String;
 
 const
-  VspServiceUuids: array of TVspServiceUuids = (  // proprietary ble uart services
+  // proprietary ble uart services, indexes point to characteristics in VspCharacteristicUuids (set to -1 if some do not exist)
+  VspServiceUuids: array of TVspServiceUuids = (
     (Uuid: '569a1101-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Connectivity VSP Service'; RxIdx: 0; TxIdx: 1; MInIdx: 2; MOutIdx: 3),
     (Uuid: '6e400001-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'Nordic UART Service (NUS)';      RxIdx: 4; TxIdx: 5; MInIdx: -1; MOutIdx: -1)
   );
 
-  VspCharacteristicUuids: array of TVspCharacteristicUuids = (  // proprietary ble uart services
-    (Uuid: '569a2001-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp RX'),
+  VspCharacteristicUuids: array of TVspCharacteristicUuids = (  // proprietary ble uart characteristics
+    (Uuid: '569a2001-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp Rx'),
     (Uuid: '569a2000-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp Tx'),
     (Uuid: '569a2003-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp ModemIn'),
     (Uuid: '569a2002-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp ModemOut'),
@@ -96,6 +97,8 @@ begin
     BleIsEnabled := SimpleBleAdapterIsBluetoothEnabled();
 
 end;
+
+
 
 
 { Convert 128 bit assigned service uuid to name }
@@ -178,7 +181,7 @@ begin
 end;
 
 
-{ Convert 128 bit vsp characteristics uuid to name }
+{ Convert 128 bit vsp characteristic uuid to name }
 function BleVspCharacteristicUuidToName(uuid: String): String;
 var
   i: Integer;

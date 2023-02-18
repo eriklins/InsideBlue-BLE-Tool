@@ -47,10 +47,10 @@ object DeviceForm: TDeviceForm
     TabOrder = 1
   end
   object ButtonDisconnect: TButton
-    Left = 329
+    Left = 352
     Height = 26
     Top = 8
-    Width = 95
+    Width = 72
     Anchors = [akTop, akRight]
     Caption = 'Disconnect'
     OnClick = ButtonDisconnectClick
