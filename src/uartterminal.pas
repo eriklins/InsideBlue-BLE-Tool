@@ -5,8 +5,8 @@ unit UartTerminal;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Ble, Util;
+  Classes, SysUtils, StrUtils, Forms, StdCtrls, Controls, Graphics, Dialogs, ExtCtrls,
+  Ble, Util, SimpleBle;
 
 type
 
@@ -29,46 +29,103 @@ type
 
   end;
 
-
-procedure UartTerminalStart(DeIdx: Integer; SvIdx: Integer);
+procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: string; restore: TPanel);
+function  UartTerminalIsActive(PerHandle: TSimpleBlePeripheral): Boolean;
 
 var
   TerminalForm: array of TTerminalForm;
+  RestorePanel: TPanel;
+
 
 implementation
 
 {$R *.lfm}
 
-uses Connect;  // not best practice, but need access to ScanForm for log output and some connected device data...
+type
+  TBleVspTerminal = record
+    Handle:       TSimpleBlePeripheral;
+    DeviceName:   string;
+    MacAddress:   string;
+    UuidService:  string;
+    ServiceName:  string;
+    UuidRx:       string;
+    UuidTx:       string;
+    UuidModemIn:  string;
+    UuidModemOut: string;
+    IsActive:     Boolean;
+  end;
 
-
-{ Start a vsp uart terminal to the device DeIdx on service SvIdx }
-procedure UartTerminalStart(DeIdx: Integer; SvIdx: Integer);
 var
-  i: Integer;
+  VspTerminal: array of TBleVspTerminal;
+
+
+{ Start a vsp uart terminal to the device with given handle and service uuid }
+procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: string; restore: TPanel);
+var
+  i, j: Integer;
 begin
-  BleConnectData[DeIdx].VspTerminal[SvIdx].IsActive := true;
-  // extend form array and create form
-  i := Length(TerminalForm);
+
+  // increment terminals and increase some arrays
+  i := Length(VspTerminal);
+  SetLength(VspTerminal, i+1);
   SetLength(TerminalForm, i+1);
+
+  VspTerminal[i].Handle      := PerHandle;
+  VspTerminal[i].UuidService := SvUuid;
+  VspTerminal[i].DeviceName  := DevName;
+  VspTerminal[i].MacAddress  := MacAddr;
+  VspTerminal[i].IsActive    := true;
+  RestorePanel := restore;
+
+  // search rx/tx/modem uart characteristics of service
+  for j := 0 to Length(VspServiceUuids)-1 do begin
+      if SvUuid = VspServiceUuids[j].Uuid then begin
+        VspTerminal[i].ServiceName  := VspServiceUuids[j].Name;
+        VspTerminal[i].UuidRx       := VspCharacteristicUuids[VspServiceUuids[j].ChRx].Uuid;
+        VspTerminal[i].UuidTx       := VspCharacteristicUuids[VspServiceUuids[j].ChTx].Uuid;
+        if VspServiceUuids[j].ChModemIn < 0 then  // modem characteristics are optional
+          VspTerminal[i].UuidModemIn := ''
+        else
+          VspTerminal[i].UuidModemIn  := VspCharacteristicUuids[VspServiceUuids[j].ChModemIn].Uuid;
+        if VspServiceUuids[j].ChModemOut < 0 then  // modem characteristics are optional
+          VspTerminal[i].UuidModemOut := ''
+        else
+          VspTerminal[i].UuidModemOut := VspCharacteristicUuids[VspServiceUuids[j].ChModemOut].Uuid;
+      end;
+  end;
+
   Application.CreateForm(TTerminalForm, TerminalForm[i]);
-  TerminalForm[i].Tag := (DeIdx shl TagPosDev) or (SvIdx shl TagPosSrv) or i;
   TerminalForm[i].Top := UtilGetNextFormTop;
   TerminalForm[i].Left := UtilGetNextFormLeft;
-  if BleConnectData[DeIdx].DeviceName = '' then begin
-    UtilLog('Open uart terminal: "<unknown name>" [' + BleConnectData[DeIdx].MacAddress + '] - ' + BleConnectData[DeIdx].VspTerminal[SvIdx].ServiceName);
-    TerminalForm[i].Caption := '"<unknown name>" [' + BleConnectData[DeIdx].MacAddress + '] - ' +
-                               BleConnectData[DeIdx].VspTerminal[SvIdx].ServiceName + ' - Virtual Uart Terminal';
+  if VspTerminal[i].DeviceName = '' then begin
+    UtilLog('Open uart terminal: "<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
+    TerminalForm[i].Caption := '"<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
   end else begin
-    UtilLog('Open uart terminal: ' + BleConnectData[DeIdx].DeviceName + ' [' + BleConnectData[DeIdx].MacAddress + '] - ' + BleConnectData[DeIdx].VspTerminal[SvIdx].ServiceName);
-    TerminalForm[i].Caption := BleConnectData[DeIdx].DeviceName + ' [' + BleConnectData[DeIdx].MacAddress + '] - ' +
-                             BleConnectData[DeIdx].VspTerminal[SvIdx].ServiceName + ' - Virtual Uart Terminal';
+      UtilLog('Open uart terminal: "' + VspTerminal[i].DeviceName + '" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
+      TerminalForm[i].Caption := '"' + VspTerminal[i].DeviceName + '" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
   end;
-  TerminalForm[i].TextBoxDeviceName.Caption := BleConnectData[DeIdx].DeviceName;
-  TerminalForm[i].LabelMacAddress.Caption := 'MAC Address [' + BleConnectData[DeIdx].MacAddress + ']';
+  TerminalForm[i].TextBoxDeviceName.Caption := VspTerminal[i].DeviceName;
+  TerminalForm[i].LabelMacAddress.Caption := 'MAC Address [' + VspTerminal[i].MacAddress + ']';
   TerminalForm[i].Show;
   UtilSetNextFormTop(TerminalForm[i]);
   UtilSetNextFormLeft(TerminalForm[i]);
+end;
+
+
+{ Check if there is a vsp terminal active using this peripheral handle }
+function UartTerminalIsActive(PerHandle: TSimpleBlePeripheral): Boolean;
+var
+  i: Integer;
+begin
+  Result := false;
+  i := 0;
+  while i < Length(VspTerminal) do begin
+    if (VspTerminal[i].Handle = PerHandle) and (VspTerminal[i].IsActive) then begin
+      Result := true;
+      Exit;
+    end;
+    Inc(i);
+  end;
 end;
 
 
@@ -82,10 +139,9 @@ begin
   SvIdx := (i shr TagPosSrv) and $ff;
   FoIdx := (i and $ff);
   UtilSetNextFormLeft(TerminalForm[Length(TerminalForm)-1], true);
-
+  Delete(VspTerminal, FoIdx, 1);
   Delete(TerminalForm, FoIdx, 1);
-  BleConnectData[DeIdx].VspTerminal[SvIdx].IsActive := false;
-  ConnectRestoreVspPanel(DeIdx, SvIdx);
+  RestorePanel.Enabled := true;
 end;
 
 

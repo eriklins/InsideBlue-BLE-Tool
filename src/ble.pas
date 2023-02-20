@@ -15,48 +15,42 @@ type
     len:  Integer;
   end;
 
-  TBleVspTerminal = record
-    ServiceFound:       Boolean;
-    ServiceName:        string;
-    CharacteristicName: array [0..3] of string;
-    CharacteristicIdx:  array [0..3] of Integer;
-    IsActive:           Boolean;
-    DeviceId:           Integer;
-  end;
-
   { Device data we need during an active device connection }
   TBleConnectData = record
     ScnIdx: integer;
-    PeripheralHandle:       TSimpleBlePeripheral;
-    DeviceName:             String;
-    MacAddress:             String;
-    ServicesCount:          Integer;
-    Services:               array of TSimpleBleService;
-    Characteristic:         array of array of TCharDescData;
-    Descriptor:             array of array of array of TCharDescData;
-    IsConnected:            Boolean;
-    IsPaired:               Boolean;
-    VspTerminal:            array of TBleVspTerminal;
+    PeripheralHandle: TSimpleBlePeripheral;
+    DeviceName:       String;
+    MacAddress:       String;
+    ServicesCount:    Integer;
+    Services:         array of TSimpleBleService;
+    Characteristic:   array of array of TCharDescData;
+    Descriptor:       array of array of array of TCharDescData;
+    IsConnected:      Boolean;
+    IsPaired:         Boolean;
+    VspActiveCnt:     Integer;
   end;
 
   TVspServiceUuids = record
-    Uuid: String;
-    Name: String;
+    Uuid:       String;
+    Name:       String;
+    ChRx:       Integer;
+    ChTx:       Integer;
+    ChModemIn:  Integer;
+    ChModemOut: Integer;
   end;
 
   TVspCharacteristicUuids = record
     Uuid: String;
     Name: String;
-    Func: Integer;
   end;
 
   procedure BleInit;
-  function BleAssignedServiceUuidToName(uuid: String): String;
-  function BleAssignedCharacteristicUuidToName(uuid: String): String;
-  function BleAssignedDescriptorUuidToName(uuid: String): String;
-  function BleAssignedCompanyIdToName(code: String): String;
-  function BleVspServiceUuidToName(uuid: String): String;
-  function BleVspCharacteristicUuidToName(uuid: String; var f: Integer): String;
+  function  BleAssignedServiceUuidToName(uuid: String): String;
+  function  BleAssignedCharacteristicUuidToName(uuid: String): String;
+  function  BleAssignedDescriptorUuidToName(uuid: String): String;
+  function  BleAssignedCompanyIdToName(code: String): String;
+  function  BleVspServiceUuidToName(uuid: String): String;
+  function  BleVspCharacteristicUuidToName(uuid: String): String;
 
 const
 
@@ -65,17 +59,17 @@ const
 
   // proprietary ble uart services, indexes point to characteristics in VspCharacteristicUuids (set to -1 if some do not exist)
   VspServiceUuids: array of TVspServiceUuids = (
-    (Uuid: '569a1101-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Connectivity VSP Service'),
-    (Uuid: '6e400001-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'Nordic UART Service (NUS)')
+    (Uuid: '569a1101-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Connectivity VSP Service'; ChRx: 0; ChTx: 1; ChModemIn: 2;  ChModemOut: 3),
+    (Uuid: '6e400001-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'Nordic UART Service (NUS)';      ChRx: 4; ChTx: 6; ChModemIn: -1; ChModemOut: -1)
   );
 
   VspCharacteristicUuids: array of TVspCharacteristicUuids = (  // proprietary ble uart characteristics
-    (Uuid: '569a2001-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp Rx';       Func: 0),
-    (Uuid: '569a2000-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp Tx';       Func: 1),
-    (Uuid: '569a2003-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp ModemIn';  Func: 2),
-    (Uuid: '569a2002-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp ModemOut'; Func: 3),
-    (Uuid: '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'NUS Rx'; Func: 0),
-    (Uuid: '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'NUS TX'; Func: 1)
+    (Uuid: '569a2001-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp Rx'),
+    (Uuid: '569a2000-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp Tx'),
+    (Uuid: '569a2003-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp ModemIn'),
+    (Uuid: '569a2002-b87f-490c-92cb-11ba5ea5167c'; Name: 'Laird Vsp ModemOut'),
+    (Uuid: '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'NUS Rx'),
+    (Uuid: '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; Name: 'NUS TX')
   );
 
   VspFuncRx       = 0;
@@ -93,7 +87,6 @@ var
   SimpleBleErr: TSimpleBleErr;
   BleAdapterIsInitialized: Boolean;
   BleIsEnabled: Boolean;
-  BleVspTerminal: TBleVspTerminal;
 
 
 implementation
@@ -131,8 +124,6 @@ begin
     BleIsEnabled := SimpleBleAdapterIsBluetoothEnabled();
 
 end;
-
-
 
 
 { Convert 128 bit assigned service uuid to name }
@@ -211,13 +202,12 @@ end;
 
 
 { Convert 128 bit vsp characteristic uuid to name and function id }
-function BleVspCharacteristicUuidToName(uuid: String; var f: Integer): String;
+function BleVspCharacteristicUuidToName(uuid: String): String;
 var
   i: Integer;
 begin
   for i := 0 to Length(VspCharacteristicUuids)-1 do begin  // check proprietary uart service uuids
     if (VspCharacteristicUuids[i].Uuid = uuid) or (VspCharacteristicUuids[i].Uuid = Copy(uuid, 5, 4)) then begin
-      f := VspCharacteristicUuids[i].Func;
       Result := VspCharacteristicUuids[i].Name;
       Exit;
     end;

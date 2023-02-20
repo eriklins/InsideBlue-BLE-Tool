@@ -61,7 +61,6 @@ implementation
 
 {$R *.lfm}
 
-
 const
   DeviceFormPaddingVertical   = 6;
   DeviceFormPaddingHorizontal = 8;
@@ -93,6 +92,7 @@ begin
 end;
 
 
+{ Checks if the a peripheral handle is still being used for an active connection }
 function ConnectHandleIsConnected(h: TSimpleBlePeripheral): Boolean;
 var
   i: Integer;
@@ -108,6 +108,8 @@ begin
   end;
 end;
 
+
+{ Callback function on disconnect of device }
 procedure DeviceOnDisconnect(Peripheral: TSimpleBlePeripheral; UserData: PPointer);
 var
   idx: Integer;
@@ -137,6 +139,7 @@ var
   Buffer: array of Byte;
   ChData: PByte;
   ChLen: NativeUInt;
+  VspServiceFound: Boolean;
 begin
   SetLength(Buffer, CharDescMaxLength);
   ChData := PByte(Buffer);
@@ -152,7 +155,7 @@ begin
   BleConnectData[i].DeviceName       := DevName;
   BleConnectData[i].MacAddress       := MacAddr;
   BleConnectData[i].PeripheralHandle := PerHandle;
-  RestoreFormElement := restore;
+  RestoreFormElement := restore;  // this points to the connect button on the scan form we need to re-enable after disconnect
 
   // register on connect callback function
   SimpleBlePeripheralSetCallbackOnDisconnected(BleConnectData[i].PeripheralHandle, @DeviceOnDisconnect, Nil);
@@ -206,7 +209,6 @@ begin
     SetLength(BleConnectData[i].Services,                   BleConnectData[i].ServicesCount);
     SetLength(BleConnectData[i].Characteristic,             BleConnectData[i].ServicesCount);
     SetLength(BleConnectData[i].Descriptor,                 BleConnectData[i].ServicesCount);
-    SetLength(BleConnectData[i].VspTerminal,                BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].Panel,                   BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].LabelServiceUuid,        BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].ButtonVspTerminal,       BleConnectData[i].ServicesCount);
@@ -237,15 +239,13 @@ begin
         n := BleVspServiceUuidToName(s);
         if n = '' then begin // neither assigned service nor vsp service
           UtilLog('     SV: ' + s);
-          BleConnectData[i].VspTerminal[SvIdx].ServiceFound := false;
         end else begin  // vsp service
           UtilLog('     SV: ' + s + ' (' + n + ')');
-          BleConnectData[i].VspTerminal[SvIdx].ServiceFound := true;
-          BleConnectData[i].VspTerminal[SvIdx].ServiceName  := n;
+          VspServiceFound := true;
         end;
       end else begin  // assigned service
         UtilLog('     SV: ' + s + ' (' + n + ')');
-        BleConnectData[i].VspTerminal[SvIdx].ServiceFound := false;
+        VspServiceFound := false;
       end;
 
       // show service uuid
@@ -263,7 +263,7 @@ begin
         DeviceFormElements[i].LabelServiceUuid[SvIdx].ShowHint := true;
         DeviceFormElements[i].LabelServiceUuid[SvIdx].Hint     := s;
       end;
-      if BleConnectData[i].VspTerminal[SvIdx].ServiceFound then begin
+      if VspServiceFound then begin
         DeviceFormElements[i].ButtonVspTerminal[SvIdx]         := TButton.Create(DeviceForm[i]);
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Parent  := DeviceFormElements[i].Panel[SvIdx];
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Tag     := (i shl TagPosDev) or (SvIdx shl TagPosSrv);
@@ -289,15 +289,12 @@ begin
           SetLength(BleConnectData[i].Characteristic[SvIdx][ChIdx].data, CharDescMaxLength);
           SetString(s, BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
           n := BleAssignedCharacteristicUuidToName(s);
-          if n = '' then begin  // neither assigned service nor vsp service
-            n := BleVspCharacteristicUuidToName(s, j);
-            if n = '' then begin  // vsp service
-              UtilLog('         CH: ' + s);
-            end else begin
+          if n = '' then begin
+            n := BleVspCharacteristicUuidToName(s);
+            if n = '' then  // neither assigned service nor vsp service
+              UtilLog('         CH: ' + s)
+            else  // vsp service
               UtilLog('         CH: ' + s + ' (' + n + ')');
-              BleConnectData[i].VspTerminal[SvIdx].CharacteristicName[j] := n;
-              BleConnectData[i].VspTerminal[SvIdx].CharacteristicIdx[j]  := ChIdx;
-            end;
           end else  // assigned service
             UtilLog('         CH: ' + s + ' (' + n + ')');
 
@@ -350,7 +347,6 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Font.Size  := 8;
-            //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Caption    := 'RD';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].OnChange   := @DeviceForm[i].ButtonCharRead;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
@@ -374,7 +370,6 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Font.Size  := 8;
-            //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Caption    := 'WRc';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].OnChange   := @DeviceForm[i].ButtonCharWriteCommand;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
@@ -390,7 +385,6 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Font.Size  := 8;
-            //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Caption    := 'WRr';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].OnChange   := @DeviceForm[i].ButtonCharWriteRequest;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
@@ -405,7 +399,6 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Font.Size  := 8;
-            //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Caption    := 'NOT';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].OnChange   := @DeviceForm[i].ButtonCharNotify;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
@@ -419,7 +412,6 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Font.Size  := 8;
-            //DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Font.Style := [fsBold];
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Caption    := 'IND';
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].OnChange   := @DeviceForm[i].ButtonCharIndicate;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
@@ -527,12 +519,11 @@ var
 begin
   idx := TForm(Sender).Tag;
 
-  for i := 0 to Length(BleConnectData[idx].VspTerminal)-1 do
-    if BleConnectData[idx].VspTerminal[i].IsActive then begin
-      ShowMessage('Cannot close when uart terminal open.');
-      CanClose := false;
-      Exit;
-    end;
+  if UartTerminalIsActive(BleConnectData[idx].PeripheralHandle) then begin
+    ShowMessage('Cannot close when uart terminal open.');
+    CanClose := false;
+    Exit;
+  end;
 
   DisconnectDevice(idx);
   RestoreFormElement.Enabled := true;
@@ -555,15 +546,18 @@ end;
 { Open vsp terminal }
 procedure TDeviceForm.ButtonVspTerminalClick(Sender: TObject);
 var
-  i, DeIdx, SvIdx, ChIdx: Integer;
+  i, DeIdx, SvIdx: Integer;
+  s: string;
 begin
   i := TCheckBox(Sender).Tag;
   DeIdx := (i shr TagPosDev) and $ff;
   SvIdx := (i shr TagPosSrv) and $ff;
-  ChIdx := (i shr TagPosChr) and $ff;
-  BleConnectData[DeIdx].VspTerminal[SvIdx].IsActive := true;
+
+  Inc(BleConnectData[DeIdx].VspActiveCnt);
   DeviceFormElements[DeIdx].Panel[SvIdx].Enabled := false;
-  UartTerminalStart(DeIdx, SvIdx);
+
+  SetString(s, BleConnectData[DeIdx].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
+  UartTerminalStart(BleConnectData[DeIdx].PeripheralHandle, BleConnectData[DeIdx].DeviceName, BleConnectData[DeIdx].MacAddress, s, DeviceFormElements[DeIdx].Panel[SvIdx]);
 end;
 
 
