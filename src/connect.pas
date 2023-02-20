@@ -189,8 +189,8 @@ begin
   Application.CreateForm(TDeviceForm, DeviceForm[i]);
   DeviceForm[i].Tag  := i;
   DeviceForm[i].ButtonDisconnect.Tag := i;
-  DeviceForm[i].Top  := UtilGetNextFormTop;
-  DeviceForm[i].Left := UtilGetNextFormLeft;
+  DeviceForm[i].Top  := UtilGetNextFormTop();
+  DeviceForm[i].Left := UtilGetNextFormLeft();
   if BleConnectData[i].DeviceName = '' then begin
     DeviceForm[i].Caption                   := '"<unknown name>" [' + UpperCase(BleConnectData[i].MacAddress) + '] - Connecting...';
     DeviceForm[i].TextBoxDeviceName.Caption := '<unknown name>';
@@ -522,7 +522,6 @@ begin
     end else begin
       UtilLog('Disconnected from "' + BleConnectData[idx].DeviceName + '" [' + UpperCase(BleConnectData[idx].MacAddress) + ']');
       DeviceForm[idx].Caption := BleConnectData[idx].DeviceName + '" [' + UpperCase(BleConnectData[idx].MacAddress) + '] - Disconnected.';
-      //SimpleBlePeripheralReleaseHandle(BleConnectData[idx].PeripheralHandle);
     end;
   end;
 end;
@@ -552,9 +551,8 @@ begin
 
   DisconnectDevice(idx);
   RestoreFormElement.Enabled := true;
-  UtilSetNextFormLeft(DeviceForm[Length(BleConnectData)-1], true);
+  UtilSetNextFormLeft(DeviceForm[idx], true);
   Delete(BleConnectData, idx, 1);
-  Delete(DeviceForm, idx, 1);
 end;
 
 
@@ -564,7 +562,7 @@ var
   idx: Integer;
 begin
   idx := TForm(Sender).Tag;
-  DeviceForm[idx].Close;  // this automatically forces TDeviceForm.FormClose()
+  DeviceForm[idx].Close;  // this automatically forces TDeviceForm.FormCloseQuery()
 end;
 
 
@@ -1016,7 +1014,7 @@ begin
         DisconnectDevice(idx);
         RestoreFormElement.Enabled := True;
         Delete(BleConnectData, idx, 1);
-        UtilSetNextFormLeft(DeviceForm[Length(BleConnectData)-1], true);
+        UtilSetNextFormLeft(DeviceForm[idx], true);
         Delete(DeviceForm, idx, 1);
       end;
     end;

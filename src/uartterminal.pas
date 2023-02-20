@@ -34,7 +34,6 @@ function  UartTerminalIsActive(PerHandle: TSimpleBlePeripheral): Boolean;
 
 var
   TerminalForm: array of TTerminalForm;
-  RestorePanel: TPanel;
 
 
 implementation
@@ -57,6 +56,7 @@ type
 
 var
   VspTerminal: array of TBleVspTerminal;
+  RestorePanel: TPanel;
 
 
 { Start a vsp uart terminal to the device with given handle and service uuid }
@@ -93,10 +93,16 @@ begin
           VspTerminal[i].UuidModemOut := VspCharacteristicUuids[VspServiceUuids[j].ChModemOut].Uuid;
       end;
   end;
+  //UtilLog('VSP: ' + VspTerminal[i].UuidService);
+  //UtilLog('     RX      : ' + VspTerminal[i].UuidRx);
+  //UtilLog('     TX      : ' + VspTerminal[i].UuidTx);
+  //UtilLog('     ModemIn : ' + VspTerminal[i].UuidModemIn);
+  //UtilLog('     ModemOut: ' + VspTerminal[i].UuidModemOut);
 
   Application.CreateForm(TTerminalForm, TerminalForm[i]);
-  TerminalForm[i].Top := UtilGetNextFormTop;
-  TerminalForm[i].Left := UtilGetNextFormLeft;
+  TerminalForm[i].Tag := i;
+  TerminalForm[i].Top := UtilGetNextFormTop();
+  TerminalForm[i].Left := UtilGetNextFormLeft();
   if VspTerminal[i].DeviceName = '' then begin
     UtilLog('Open uart terminal: "<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
     TerminalForm[i].Caption := '"<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
@@ -130,18 +136,20 @@ begin
 end;
 
 
+{ TTerminalForm }
+
 { Close vsp terminal }
 procedure TTerminalForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
-  i, FoIdx: Integer;
+  i: Integer;
 begin
   i := TForm(Sender).Tag;
-  FoIdx := (i and $ff);
-  UtilSetNextFormLeft(TerminalForm[Length(TerminalForm)-1], true);
-  Delete(VspTerminal, FoIdx, 1);
-  Delete(TerminalForm, FoIdx, 1);
+  UtilSetNextFormLeft(TerminalForm[i], true);
+  Delete(VspTerminal, i, 1);
   RestorePanel.Enabled := true;
 end;
+
+
 
 
 end.

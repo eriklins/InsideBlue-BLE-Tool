@@ -33,8 +33,6 @@ begin
   {$ENDIF}
 
   Application.CreateForm(TScanForm, ScanForm);
-  Application.CreateForm(THelpForm, HelpForm);
-  Application.CreateForm(TTerminalForm, TerminalForm);
   Application.Run;
 end.
 
