@@ -183,6 +183,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UartTerminal"/>
       </Unit>
+      <Unit>
+        <Filename Value="util.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Util"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

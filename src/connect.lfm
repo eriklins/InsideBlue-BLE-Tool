@@ -1,15 +1,14 @@
 object DeviceForm: TDeviceForm
-  Left = 38
+  Left = 74
   Height = 320
-  Top = 938
+  Top = 833
   Width = 432
   Caption = 'Connect Device...'
   ClientHeight = 320
   ClientWidth = 432
   Color = clWhite
   Constraints.MinHeight = 320
-  OnClose = FormClose
-  OnCreate = FormCreate
+  OnCloseQuery = FormCloseQuery
   LCLVersion = '2.3.0.0'
   object LabelMacAddress: TLabel
     Left = 8

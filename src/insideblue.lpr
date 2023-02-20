@@ -16,7 +16,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Dialogs, Main, Help, SimpleBle, assignednumbers, uartterminal;
+  Forms, Dialogs, Main, Help, SimpleBle, assignednumbers, uartterminal, util;
 
 {$R *.res}
 

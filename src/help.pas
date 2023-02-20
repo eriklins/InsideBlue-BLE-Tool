@@ -5,7 +5,8 @@ unit Help;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, RichMemo;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, RichMemo,
+  Util;
 
 type
 
@@ -23,18 +24,18 @@ type
   end;
 
   function HelpInit(): Boolean;
-  procedure HelpShow();
+  procedure HelpShow(b: TButton);
 
 var
   HelpForm: THelpForm;
   HelpFileExist: Boolean;
   HelpFilePath: String;
+  RestoreButton: TButton;
+
 
 implementation
 
 {$R *.lfm}
-
-uses Main;
 
 
 { THelpForm }
@@ -48,7 +49,7 @@ begin
   if not FileExists(HelpFilePath + 'help.rtf') then begin
     HelpFilePath := '..\..\help\';
     if not FileExists(HelpFilePath + 'help.rtf') then begin
-      ScanForm.LogOutput.Append('Could not open help file.');
+      UtilLog('Could not open help file.');
       HelpFileExist := false;
     end;
   end;
@@ -57,12 +58,14 @@ end;
 
 
 { Show the help form }
-procedure HelpShow();
+procedure HelpShow(b: TButton);
 begin
-  HelpForm.Top := ScanForm.Top;
-  HelpForm.Left := NextFormLeftCoordinate;
+  HelpForm.Top := UtilGetNextFormTop;
+  HelpForm.Left := UtilGetNextFormLeft;
   HelpForm.Show;
-  NextFormLeftCoordinate := NextFormLeftCoordinate + HelpForm.Width + NextFormMargin;
+  UtilSetNextFormTop(HelpForm);
+  UtilSetNextFormLeft(HelpForm);
+  RestoreButton := b;
 end;
 
 
@@ -85,9 +88,8 @@ end;
 { On close help window we reset the coordinate for the next window and re-enable the help button }
 procedure THelpForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if NextFormLeftCoordinate <= HelpForm.Left + HelpForm.Width + NextFormMargin then
-    NextFormLeftCoordinate := NextFormLeftCoordinate - (HelpForm.Width + NextFormMargin);
-  ScanForm.ButtonHelp.Enabled := true;
+  UtilSetNextFormLeft(HelpForm, true);
+  RestoreButton.Enabled := true;
 end;
 
 

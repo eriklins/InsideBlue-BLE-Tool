@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Dialogs, StrUtils,
-  SimpleBle, Ble;
+  SimpleBle, Util, Ble;
 
 type
 
@@ -35,19 +35,18 @@ type
   end;
 
   procedure ScanClearPeripheralList;
-  procedure ScanRestoreConnectButton(peripheral: TSimpleBlePeripheral);
   procedure ScanInit;
 
 var
   FlagBleScanningActive: Boolean = false;
   PeripheralNofDevices: Integer = 0;
-  PeripheralScanData: array of TBleScanData;
-  PeripheralScanFilter: TBleScanFilter;
+  BleScanData: array of TBleScanData;
+  BleScanFilter: TBleScanFilter;
 
 
 implementation
 
-uses Main, Connect;  // not best practice, but need access to ScanForm for log output...
+uses Connect;  // not best practice, but need access to ScanForm for log output...
 
 
 { Callback functions for SimpleBLE library }
@@ -60,7 +59,7 @@ begin
   Identifier := SimpleBleAdapterIdentifier(Adapter);
   if Identifier = '' then
     Exit;
-  ScanForm.LogOutput.Append('Scanning started...');
+  UtilLog('Scanning started...');
 end;
 
 
@@ -72,7 +71,7 @@ begin
   Identifier := SimpleBleAdapterIdentifier(Adapter);
   if Identifier = '' then
     Exit;
-  ScanForm.LogOutput.Append('Scanning stopped.');
+  UtilLog('Scanning stopped.');
 end;
 
 
@@ -94,24 +93,24 @@ begin
     Exit;
 
   // filter for device name
-  if PeripheralScanFilter.DeviceName <> '' then
-    if not AnsiContainsText(string(SimpleBlePeripheralIdentifier(Peripheral)), PeripheralScanFilter.DeviceName) then
+  if BleScanFilter.DeviceName <> '' then
+    if not AnsiContainsText(string(SimpleBlePeripheralIdentifier(Peripheral)), BleScanFilter.DeviceName) then
       Exit;
 
   // filter for mac address
-  if PeripheralScanFilter.MacAddress <> '' then
-    if not AnsiContainsText(string(SimpleBlePeripheralAddress(Peripheral)), PeripheralScanFilter.MacAddress) then
+  if BleScanFilter.MacAddress <> '' then
+    if not AnsiContainsText(string(SimpleBlePeripheralAddress(Peripheral)), BleScanFilter.MacAddress) then
       Exit;
 
   // filter for rssi
-  if PeripheralScanFilter.Rssi <> 0 then
-    if SimpleBlePeripheralRssi(Peripheral) < PeripheralScanFilter.Rssi then
+  if BleScanFilter.Rssi <> 0 then
+    if SimpleBlePeripheralRssi(Peripheral) < BleScanFilter.Rssi then
       Exit;
 
   // check if device already exist
   DevIdx := 0;
   while DevIdx < PeripheralNofDevices do begin
-    if PeripheralScanData[DevIdx].MacAddress = string(SimpleBlePeripheralAddress(Peripheral)) then begin
+    if BleScanData[DevIdx].MacAddress = string(SimpleBlePeripheralAddress(Peripheral)) then begin
       break;  // DevIdx is now index of existing device
     end;
     Inc(DevIdx);
@@ -119,37 +118,37 @@ begin
 
   // if device doesn't exist, we extend the array and increment nof devices
   if DevIdx = PeripheralNofDevices then begin
-    SetLength(PeripheralScanData, DevIdx + 1);
+    SetLength(BleScanData, DevIdx + 1);
     //SetLength(PeripheralScanPanel, DevIdx + 1);
     Inc(PeripheralNofDevices);
   end;
 
   // Skip device in case of an active BLE connection
-  if PeripheralScanData[DevIdx].IsConnected then
+  if BleScanData[DevIdx].IsConnected then
     Exit;
 
   // populate device scan data
-  PeripheralScanData[DevIdx].PeripheralHandle := Peripheral;
-  PeripheralScanData[DevIdx].DeviceName := string(SimpleBlePeripheralIdentifier(Peripheral));
-  PeripheralScanData[DevIdx].MacAddress := string(SimpleBlePeripheralAddress(Peripheral));
-  PeripheralScanData[DevIdx].Rssi := SimpleBlePeripheralRssi(Peripheral);
-  SimpleBlePeripheralIsConnectable(Peripheral, PeripheralScanData[DevIdx].IsConnectable);
-  PeripheralScanData[DevIdx].TxPower := SimpleBlePeripheralTxPower(Peripheral);
+  BleScanData[DevIdx].PeripheralHandle := Peripheral;
+  BleScanData[DevIdx].DeviceName := string(SimpleBlePeripheralIdentifier(Peripheral));
+  BleScanData[DevIdx].MacAddress := string(SimpleBlePeripheralAddress(Peripheral));
+  BleScanData[DevIdx].Rssi := SimpleBlePeripheralRssi(Peripheral);
+  SimpleBlePeripheralIsConnectable(Peripheral, BleScanData[DevIdx].IsConnectable);
+  BleScanData[DevIdx].TxPower := SimpleBlePeripheralTxPower(Peripheral);
 
   s := '';
-  if not PeripheralScanData[DevIdx].IsConnectable then s := 'Not ';
-  ScanForm.LogOutput.Append('Dev: [' + UpperCase(PeripheralScanData[DevIdx].MacAddress) + '] "' + PeripheralScanData[DevIdx].DeviceName + '" ' + IntToStr(PeripheralScanData[DevIdx].Rssi) + 'dBm ' + s + 'Connectable');
+  if not BleScanData[DevIdx].IsConnectable then s := 'Not ';
+  UtilLog('Dev: [' + UpperCase(BleScanData[DevIdx].MacAddress) + '] "' + BleScanData[DevIdx].DeviceName + '" ' + IntToStr(BleScanData[DevIdx].Rssi) + 'dBm ' + s + 'Connectable');
 
   // check if we got advertised services
   if SimpleBlePeripheralServicesCount(Peripheral) > 0 then begin
-    if PeripheralScanData[DevIdx].ServicesCount = 0 then begin
-      PeripheralScanData[DevIdx].ServicesCount := SimpleBlePeripheralServicesCount(Peripheral);
-      SetLength(PeripheralScanData[DevIdx].Services, PeripheralScanData[DevIdx].ServicesCount);
+    if BleScanData[DevIdx].ServicesCount = 0 then begin
+      BleScanData[DevIdx].ServicesCount := SimpleBlePeripheralServicesCount(Peripheral);
+      SetLength(BleScanData[DevIdx].Services, BleScanData[DevIdx].ServicesCount);
     end;
-    for j := 0 to PeripheralScanData[DevIdx].ServicesCount-1 do begin
-      SimpleBlePeripheralServicesGet(Peripheral, j, PeripheralScanData[DevIdx].Services[j]);
-      SetString(s, PeripheralScanData[DevIdx].Services[j].Uuid.Value, SIMPLEBLE_UUID_STR_LEN);
-      ScanForm.LogOutput.Append('     SV: ' + s);
+    for j := 0 to BleScanData[DevIdx].ServicesCount-1 do begin
+      SimpleBlePeripheralServicesGet(Peripheral, j, BleScanData[DevIdx].Services[j]);
+      SetString(s, BleScanData[DevIdx].Services[j].Uuid.Value, SIMPLEBLE_UUID_STR_LEN);
+      UtilLog('     SV: ' + s);
     end;
   end;
 
@@ -158,28 +157,28 @@ begin
     SimpleBlePeripheralManufacturerDataGet(Peripheral, 0, TmpManufacturerData);  // store manuf data temporarily
     j := 0;
     FlagNewData := true;
-    while j < PeripheralScanData[DevIdx].ManufacturerDataCount do begin
-      if PeripheralScanData[DevIdx].ManufacturerData[j].ManufacturerId = TmpManufacturerData.ManufacturerId then begin
+    while j < BleScanData[DevIdx].ManufacturerDataCount do begin
+      if BleScanData[DevIdx].ManufacturerData[j].ManufacturerId = TmpManufacturerData.ManufacturerId then begin
         FlagNewData := false;
         break;
       end;
       Inc(j);
     end;
     if FlagNewData then begin
-      SetLength(PeripheralScanData[DevIdx].ManufacturerData, j + 1);
-      PeripheralScanData[DevIdx].ManufacturerDataCount := j + 1;
+      SetLength(BleScanData[DevIdx].ManufacturerData, j + 1);
+      BleScanData[DevIdx].ManufacturerDataCount := j + 1;
     end;
-    SimpleBlePeripheralManufacturerDataGet(Peripheral, 0, PeripheralScanData[DevIdx].ManufacturerData[j]);
-    for j := 0 to PeripheralScanData[DevIdx].ManufacturerDataCount-1 do begin
+    SimpleBlePeripheralManufacturerDataGet(Peripheral, 0, BleScanData[DevIdx].ManufacturerData[j]);
+    for j := 0 to BleScanData[DevIdx].ManufacturerDataCount-1 do begin
       s := '';
-      for k := 0 to PeripheralScanData[DevIdx].ManufacturerData[j].DataLength-1 do
-        s := s + IntToHex(PeripheralScanData[DevIdx].ManufacturerData[j].Data[k], 2);
-      ScanForm.LogOutput.Append('     MD: ' + IntToHex(PeripheralScanData[DevIdx].ManufacturerData[j].ManufacturerId, 4) + ':' + s);
+      for k := 0 to BleScanData[DevIdx].ManufacturerData[j].DataLength-1 do
+        s := s + IntToHex(BleScanData[DevIdx].ManufacturerData[j].Data[k], 2);
+      UtilLog('     MD: ' + IntToHex(BleScanData[DevIdx].ManufacturerData[j].ManufacturerId, 4) + ':' + s);
     end;
   end;
 
   // set flag to update form elements in timer event
-  PeripheralScanData[DevIdx].UpdateForm := true;
+  BleScanData[DevIdx].UpdateForm := true;
 end;
 
 
@@ -190,26 +189,12 @@ var
 begin
   // delete peripheral scan data and release ble peripheral handles
   for i := 0 to PeripheralNofDevices-1 do begin
-    if not PeripheralScanData[i].IsConnected then  // only release handle if device is not connected!
-      SimpleBlePeripheralReleaseHandle(PeripheralScanData[i].PeripheralHandle);
+    if not ConnectHandleIsConnected(BleScanData[i].PeripheralHandle) then  // only release handle if device is not connected!
+      SimpleBlePeripheralReleaseHandle(BleScanData[i].PeripheralHandle);
   end;
   // reset number of devices and records for scan data and form elements
   PeripheralNofDevices := 0;
-  SetLength(PeripheralScanData, 0);
-end;
-
-
-{ When disconnecting from a device we may restore the Connect button }
-procedure ScanRestoreConnectButton(peripheral: TSimpleBlePeripheral);
-var
-  i: Integer;
-begin
-  for i := 0 to PeripheralNofDevices-1 do begin
-    if PeripheralScanData[i].PeripheralHandle = peripheral then begin
-      PeripheralScanPanel[i].ButtonConnectDevice.Enabled := true;
-      break;
-    end;
-  end;
+  SetLength(BleScanData, 0);
 end;
 
 

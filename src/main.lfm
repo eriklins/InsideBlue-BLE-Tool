@@ -1,7 +1,7 @@
 object ScanForm: TScanForm
-  Left = 32
+  Left = 66
   Height = 840
-  Top = 42
+  Top = 39
   Width = 904
   Caption = 'InsideBlue BLE Tool V0.4-pre'
   ClientHeight = 840
@@ -4340,8 +4340,8 @@ object ScanForm: TScanForm
     0F00FF
   }
   OnChangeBounds = FormChangeBounds
+  OnClose = FormClose
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   LCLVersion = '2.3.0.0'
   object ButtonStartScan: TButton
     Left = 8
@@ -4496,7 +4496,7 @@ object ScanForm: TScanForm
     Width = 191
     Caption = 'InsideBlue BLE Tool'
     Font.CharSet = ANSI_CHARSET
-    Font.Color = clHighlight
+    Font.Color = 13402176
     Font.Height = -21
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
