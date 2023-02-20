@@ -9,27 +9,6 @@ uses
 
 type
 
-  { Data of device characteristic or descriptor (for local copy) }
-  TCharDescData = record
-    data: array of Byte;
-    len:  Integer;
-  end;
-
-  { Device data we need during an active device connection }
-  TBleConnectData = record
-    ScnIdx: integer;
-    PeripheralHandle: TSimpleBlePeripheral;
-    DeviceName:       String;
-    MacAddress:       String;
-    ServicesCount:    Integer;
-    Services:         array of TSimpleBleService;
-    Characteristic:   array of array of TCharDescData;
-    Descriptor:       array of array of array of TCharDescData;
-    IsConnected:      Boolean;
-    IsPaired:         Boolean;
-    VspActiveCnt:     Integer;
-  end;
-
   TVspServiceUuids = record
     Uuid:       String;
     Name:       String;
@@ -82,7 +61,6 @@ const
   TagPosDes = 0;
 
 var
-  BleConnectData: array of TBleConnectData;
   BleAdapter: TSimplebleAdapter;
   SimpleBleErr: TSimpleBleErr;
   BleAdapterIsInitialized: Boolean;

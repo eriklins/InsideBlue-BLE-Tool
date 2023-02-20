@@ -61,6 +61,29 @@ implementation
 
 {$R *.lfm}
 
+type
+  { Data of device characteristic or descriptor (for local copy) }
+  TCharDescData = record
+    data: array of Byte;
+    len:  Integer;
+  end;
+
+  { Device data we need during an active device connection }
+  TBleConnectData = record
+    ScnIdx: integer;
+    PeripheralHandle: TSimpleBlePeripheral;
+    DeviceName:       String;
+    MacAddress:       String;
+    ServicesCount:    Integer;
+    Services:         array of TSimpleBleService;
+    Characteristic:   array of array of TCharDescData;
+    Descriptor:       array of array of array of TCharDescData;
+    IsConnected:      Boolean;
+    IsPaired:         Boolean;
+    NotIndActiveCnt:  array of Integer;
+    VspActiveCnt:     Integer;
+  end;
+
 const
   DeviceFormPaddingVertical   = 6;
   DeviceFormPaddingHorizontal = 8;
@@ -80,6 +103,7 @@ const
   DevicePanelColor = $EED4C0;
 
 var
+  BleConnectData: array of TBleConnectData;
   DeviceForm: array of TDeviceForm;
   DeviceFormElements: array of TDeviceFormElements;
   RestoreFormElement: TButton;
@@ -150,14 +174,14 @@ begin
   SetLength(DeviceForm, i+1);
   SetLength(DeviceFormElements, i+1);
 
-  // grab existing scan data
+  // store device data locally
   BleConnectData[i].ScnIdx           := restore.Tag;
   BleConnectData[i].DeviceName       := DevName;
   BleConnectData[i].MacAddress       := MacAddr;
   BleConnectData[i].PeripheralHandle := PerHandle;
   RestoreFormElement := restore;  // this points to the connect button on the scan form we need to re-enable after disconnect
 
-  // register on connect callback function
+  // register on disconnect callback function
   SimpleBlePeripheralSetCallbackOnDisconnected(BleConnectData[i].PeripheralHandle, @DeviceOnDisconnect, Nil);
 
   // compose form for the new device
@@ -206,9 +230,10 @@ begin
   UtilLog('Reading GATT table:');
   if SimpleBlePeripheralServicesCount(BleConnectData[i].PeripheralHandle) > 0 then begin
     BleConnectData[i].ServicesCount := SimpleBlePeripheralServicesCount(BleConnectData[i].PeripheralHandle);
-    SetLength(BleConnectData[i].Services,                   BleConnectData[i].ServicesCount);
-    SetLength(BleConnectData[i].Characteristic,             BleConnectData[i].ServicesCount);
-    SetLength(BleConnectData[i].Descriptor,                 BleConnectData[i].ServicesCount);
+    SetLength(BleConnectData[i].Services,        BleConnectData[i].ServicesCount);
+    SetLength(BleConnectData[i].Characteristic,  BleConnectData[i].ServicesCount);
+    SetLength(BleConnectData[i].Descriptor,      BleConnectData[i].ServicesCount);
+    SetLength(BleConnectData[i].NotIndActiveCnt, BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].Panel,                   BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].LabelServiceUuid,        BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].ButtonVspTerminal,       BleConnectData[i].ServicesCount);
@@ -515,7 +540,7 @@ end;
 { close device form and also disconnect from device }
 procedure TDeviceForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
-  idx, i: Integer;
+  idx: Integer;
 begin
   idx := TForm(Sender).Tag;
 
@@ -811,9 +836,12 @@ begin
       UtilLog('Subscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
       ShowMessage('Subscribing failed.');
       TToggleBox(Sender).Font.Style := [];
-    end else  // success...
+    end else begin  // success...
+      Inc(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
+      DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := false;
       TToggleBox(Sender).Font.Style := [fsBold];
       UtilLog('Subscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+    end;
   end else begin  // unsubscribe
     TToggleBox(Sender).Font.Style := [];
     if(SimpleBlePeripheralUnsubscribe(BleConnectData[DeIdx].PeripheralHandle,
@@ -822,8 +850,12 @@ begin
     begin  // failed...
       UtilLog('Unsubscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
       ShowMessage('Unsubscribing failed.');
-    end else  // success
+    end else begin  // success
+      Dec(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
+      if BleConnectData[DeIdx].NotIndActiveCnt[SvIdx] = 0 then
+        DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := true;
       UtilLog('Unsubscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+    end;
   end;
 end;
 
@@ -906,9 +938,12 @@ begin
       UtilLog('Subscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
       ShowMessage('Subscribing failed.');
       TToggleBox(Sender).Font.Style := [];
-    end else  // success...
+    end else begin  // success...
+      Inc(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
+      DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := false;
       TToggleBox(Sender).Font.Style := [fsBold];
       UtilLog('Subscribed indications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+    end;
   end else begin  // unsubscribe
     TToggleBox(Sender).Font.Style := [];
     if(SimpleBlePeripheralUnsubscribe(BleConnectData[DeIdx].PeripheralHandle,
@@ -917,8 +952,12 @@ begin
     begin  // failed...
       UtilLog('Unsubscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
       ShowMessage('Unsubscribing failed.');
-    end else  // success
+    end else begin  // success
+      Dec(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
+      if BleConnectData[DeIdx].NotIndActiveCnt[SvIdx] = 0 then
+        DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := true;
       UtilLog('Unsubscribed indications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+    end;
   end;
 end;
 

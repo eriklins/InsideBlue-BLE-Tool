@@ -107,12 +107,13 @@ begin
   TerminalForm[i].TextBoxDeviceName.Caption := VspTerminal[i].DeviceName;
   TerminalForm[i].LabelMacAddress.Caption := 'MAC Address [' + VspTerminal[i].MacAddress + ']';
   TerminalForm[i].Show;
+
   UtilSetNextFormTop(TerminalForm[i]);
   UtilSetNextFormLeft(TerminalForm[i]);
 end;
 
 
-{ Check if there is a vsp terminal active using this peripheral handle }
+{ Check if there is a vsp terminal active for given device }
 function UartTerminalIsActive(PerHandle: TSimpleBlePeripheral): Boolean;
 var
   i: Integer;
@@ -132,11 +133,9 @@ end;
 { Close vsp terminal }
 procedure TTerminalForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
-  i, FoIdx, DeIdx, SvIdx: Integer;
+  i, FoIdx: Integer;
 begin
   i := TForm(Sender).Tag;
-  DeIdx := (i shr TagPosDev) and $ff;
-  SvIdx := (i shr TagPosSrv) and $ff;
   FoIdx := (i and $ff);
   UtilSetNextFormLeft(TerminalForm[Length(TerminalForm)-1], true);
   Delete(VspTerminal, FoIdx, 1);

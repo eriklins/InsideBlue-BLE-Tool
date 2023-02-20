@@ -46,8 +46,6 @@ var
 
 implementation
 
-uses Connect;  // not best practice, but need access to ScanForm for log output...
-
 
 { Callback functions for SimpleBLE library }
 
@@ -186,10 +184,12 @@ end;
 procedure ScanClearPeripheralList;
 var
   i: Integer;
+  connected: Boolean;
 begin
   // delete peripheral scan data and release ble peripheral handles
   for i := 0 to PeripheralNofDevices-1 do begin
-    if not ConnectHandleIsConnected(BleScanData[i].PeripheralHandle) then  // only release handle if device is not connected!
+    SimpleBlePeripheralIsConnected(BleScanData[i].PeripheralHandle, connected);
+    if not connected then  // only release handle if device is not connected!
       SimpleBlePeripheralReleaseHandle(BleScanData[i].PeripheralHandle);
   end;
   // reset number of devices and records for scan data and form elements
