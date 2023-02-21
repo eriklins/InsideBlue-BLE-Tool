@@ -5,8 +5,8 @@ unit Connect;
 interface
 
 uses
-  Classes, SysUtils, StrUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Util, Ble, Scan, UartTerminal, SimpleBle;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
+  SimpleBle, Util, Ble, Scan, UartTerminal;
 
 type
 

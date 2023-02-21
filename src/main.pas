@@ -116,7 +116,6 @@ var
   DevIdx, i, j: Integer;
   DevicePanelTop: Integer;
   s, n: String;
-  c: Byte;
 begin
 
   // check if BLE adapter is still enabled

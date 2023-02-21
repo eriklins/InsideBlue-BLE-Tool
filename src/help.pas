@@ -60,6 +60,7 @@ end;
 { Show the help form }
 procedure HelpShow(b: TButton);
 begin
+  Application.CreateForm(THelpForm, HelpForm);
   HelpForm.Top := UtilGetNextFormTop;
   HelpForm.Left := UtilGetNextFormLeft;
   HelpForm.Show;

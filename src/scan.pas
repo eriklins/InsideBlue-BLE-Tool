@@ -9,7 +9,6 @@ uses
   SimpleBle, Util, Ble;
 
 type
-
   { type: device data from BLE scanning }
   TBleScanData = record
     PeripheralHandle:       TSimpleBlePeripheral;

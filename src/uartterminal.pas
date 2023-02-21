@@ -5,19 +5,21 @@ unit UartTerminal;
 interface
 
 uses
-  Classes, SysUtils, StrUtils, Forms, StdCtrls, Controls, Graphics, Dialogs, ExtCtrls,
-  Ble, Util, SimpleBle;
+  Classes, SysUtils, Forms, StdCtrls, Controls, Graphics, Dialogs, ExtCtrls,
+  SimpleBle, Util, Ble;
 
 type
-
   { TTerminalForm }
   TTerminalForm = class(TForm)
     ButtonSend: TButton;
-    CheckBoxCr: TCheckBox;
-    CheckBoxLf: TCheckBox;
+    CheckBoxReceiveCR: TCheckBox;
+    CheckBoxReceiveCR1: TCheckBox;
+    CheckBoxReceiveLF: TCheckBox;
     CheckBoxHexAscii: TCheckBox;
+    CheckBoxReceiveLF1: TCheckBox;
     ComboBox1: TComboBox;
-    LabelAppend: TLabel;
+    LabelLineEndingReceive: TLabel;
+    LabelLineEndingSend: TLabel;
     LabelMacAddress: TLabel;
     MemoReceiveData: TMemo;
     TextBoxDeviceName: TEdit;

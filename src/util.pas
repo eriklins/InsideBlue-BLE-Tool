@@ -6,7 +6,8 @@ unit Util;
 interface
 
 uses
-  Classes, SysUtils, StrUtils, Forms, StdCtrls, Ble;
+  Classes, SysUtils, StrUtils, Forms, StdCtrls,
+  Ble;
 
 type
   TArrayOfByte = array of Byte;

@@ -5,10 +5,10 @@ unit Ble;
 interface
 
 uses
-  Classes, SysUtils, Dialogs, SimpleBle, AssignedNumbers;
+  Classes, SysUtils, Dialogs,
+  SimpleBle, AssignedNumbers;
 
 type
-
   TVspServiceUuids = record
     Uuid:       String;
     Name:       String;
@@ -32,7 +32,6 @@ type
   function  BleVspCharacteristicUuidToName(uuid: String): String;
 
 const
-
   CharDescMaxLength = 512;
 
 
