@@ -59,7 +59,21 @@ var
   RestorePanel: TPanel;
 
 
-{ Start a vsp uart terminal to the device with given handle and service uuid }
+{ TTerminalForm }
+
+{ Close vsp terminal }
+procedure TTerminalForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  i: Integer;
+begin
+  i := TForm(Sender).Tag;
+  UtilSetNextFormLeft(TerminalForm[i], true);
+  Delete(VspTerminal, i, 1);
+  RestorePanel.Enabled := true;
+end;
+
+
+{ Start a vsp uart terminal to the device with given peripheral handle and service uuid }
 procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: string; restore: TPanel);
 var
   i, j: Integer;
@@ -99,6 +113,7 @@ begin
   //UtilLog('     ModemIn : ' + VspTerminal[i].UuidModemIn);
   //UtilLog('     ModemOut: ' + VspTerminal[i].UuidModemOut);
 
+  // create the form
   Application.CreateForm(TTerminalForm, TerminalForm[i]);
   TerminalForm[i].Tag := i;
   TerminalForm[i].Top := UtilGetNextFormTop();
@@ -134,22 +149,6 @@ begin
     Inc(i);
   end;
 end;
-
-
-{ TTerminalForm }
-
-{ Close vsp terminal }
-procedure TTerminalForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-var
-  i: Integer;
-begin
-  i := TForm(Sender).Tag;
-  UtilSetNextFormLeft(TerminalForm[i], true);
-  Delete(VspTerminal, i, 1);
-  RestorePanel.Enabled := true;
-end;
-
-
 
 
 end.

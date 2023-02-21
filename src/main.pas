@@ -2,6 +2,32 @@ unit Main;
 
 {$mode objfpc}{$H+}
 
+{ InsideBlue BLE Tool
+  ===================
+  Welcome to InsideBlue BLE Tool, an easy to use cross-platform
+  application for Bluetooth Low-Energy (BLE) connectivity leveraging
+  the PC’s integrated Bluetooth adapter.
+
+  You can scan for BLE devices that are advertising and discover
+  their GAP services or manufacturer specific data, engage a
+  connection and access the peripheral GATT table.
+
+  For more details click on help button or check README.md.
+
+  Project
+    InsideBlue is at github: https://github.com/eriklins/InsideBlue-BLE-Tool
+
+  BLE Library
+    Inside Blue BLE Tool is based on the SimpleBLE library
+    (https://github.com/OpenBluetoothToolbox/SimpleBLE)
+    and uses the Pascal bindings for that library
+    (https://github.com/eriklins/Pascal-Bindings-For-SimpleBLE-Library).
+
+  License
+    Copyright (C) 2023 Erik Lins
+    This project is released under the MIT License (see README.md)
+}
+
 interface
 
 uses

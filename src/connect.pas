@@ -26,9 +26,7 @@ type
     procedure CheckboxHexAsciiClick(Sender: TObject);
     procedure CharEditingDone(Sender: TObject);
     procedure ConnectTimerTimer(Sender: TObject);
-    //procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure FormCreate(Sender: TObject);
 
   private
 
@@ -505,6 +503,8 @@ begin
   end;
   DeviceForm[i].Height := NextPanelVertical + 12*DeviceFormPaddingVertical;
   DeviceForm[i].Constraints.MaxHeight := NextPanelVertical + 12*DeviceFormPaddingVertical;
+  DeviceForm[i].Constraints.MaxWidth := DeviceForm[i].Width;
+  DeviceForm[i].Constraints.MinWidth := DeviceForm[i].Width;
 end;
 
 
@@ -524,15 +524,6 @@ begin
       DeviceForm[idx].Caption := BleConnectData[idx].DeviceName + '" [' + UpperCase(BleConnectData[idx].MacAddress) + '] - Disconnected.';
     end;
   end;
-end;
-
-
-{ Create the device form }
-procedure TDeviceForm.FormCreate(Sender: TObject);
-begin
-  Self.Constraints.MaxWidth := Self.Width;
-  Self.Constraints.MinWidth := Self.Width;
-
 end;
 
 

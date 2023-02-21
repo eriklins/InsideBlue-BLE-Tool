@@ -16,9 +16,10 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Dialogs, Main, Help, SimpleBle, assignednumbers, uartterminal;
+  Forms, Dialogs, Main, SimpleBle;
 
 {$R *.res}
+
 
 begin
   RequireDerivedFormResource := True;
