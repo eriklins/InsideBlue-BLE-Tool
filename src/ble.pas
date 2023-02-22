@@ -109,7 +109,7 @@ var
   i: Integer;
 begin
   for i := 0 to Length(ServiceUuids)-1 do begin  // check official service uuids
-    if (CompareChar(ServiceUuids[i].Uuid.Value, uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(ServiceUuids[i].Uuid.Value[4], uuid.Value, 4) = 0) then begin
+    if (CompareChar(uuid.Value, ServiceUuids[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(uuid.Value[4], ServiceUuids[i].Uuid.Value, 4) = 0) then begin
       Result := ServiceUuids[i].Name;
       Exit;
     end;
@@ -124,7 +124,7 @@ var
   i: Integer;
 begin
   for i := 0 to Length(CharacteristicUuids)-1 do begin
-    if (CompareChar(CharacteristicUuids[i].Uuid.Value, uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(CharacteristicUuids[i].Uuid.Value[4], uuid.Value, 4) = 0) then begin
+    if (CompareChar(uuid.Value, CharacteristicUuids[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(uuid.Value[4], CharacteristicUuids[i].Uuid.Value, 4) = 0) then begin
       Result := CharacteristicUuids[i].Name;
       Exit;
     end;
@@ -139,7 +139,7 @@ var
   i: Integer;
 begin
   for i := 0 to Length(DescriptorUuids)-1 do begin
-    if (CompareChar(DescriptorUuids[i].Uuid.Value, uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(DescriptorUuids[i].Uuid.Value[4], uuid.Value, 4) = 0) then begin
+    if (CompareChar(uuid.Value, DescriptorUuids[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(uuid.Value[4], DescriptorUuids[i].Uuid.Value, 4) = 0) then begin
       Result := DescriptorUuids[i].Name;
       Exit;
     end;
@@ -169,7 +169,7 @@ var
   i: Integer;
 begin
   for i := 0 to Length(VspServiceUuids)-1 do begin  // check proprietary uart service uuids
-    if (CompareChar(VspServiceUuids[i].Uuid.Value, uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(VspServiceUuids[i].Uuid.Value[4], uuid.Value, 4) = 0) then begin
+    if (CompareChar(uuid.Value, VspServiceUuids[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(uuid.Value[4], VspServiceUuids[i].Uuid.Value, 4) = 0) then begin
       Result := VspServiceUuids[i].Name;
       Exit;
     end;
@@ -184,7 +184,7 @@ var
   i: Integer;
 begin
   for i := 0 to Length(VspCharacteristicUuids)-1 do begin  // check proprietary uart service uuids
-    if (CompareChar(VspCharacteristicUuids[i].Uuid.Value, uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(VspCharacteristicUuids[i].Uuid.Value[4], uuid.Value, 4) = 0) then begin
+    if (CompareChar(uuid.Value, VspCharacteristicUuids[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0) or (CompareChar(uuid.Value[4], VspCharacteristicUuids[i].Uuid.Value, 4) = 0) then begin
       Result := VspCharacteristicUuids[i].Name;
       Exit;
     end;
