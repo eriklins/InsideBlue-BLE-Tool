@@ -37,14 +37,6 @@ object TerminalForm: TTerminalForm
     Caption = 'Send'
     TabOrder = 1
   end
-  object CheckBoxHexAscii: TCheckBox
-    Left = 8
-    Height = 19
-    Top = 56
-    Width = 46
-    Caption = 'ASCII'
-    TabOrder = 2
-  end
   object CheckBoxReceiveCR: TCheckBox
     Left = 576
     Height = 19
@@ -52,7 +44,7 @@ object TerminalForm: TTerminalForm
     Width = 49
     Anchors = [akTop, akRight]
     Caption = '<CR>'
-    TabOrder = 3
+    TabOrder = 2
   end
   object CheckBoxReceiveLF: TCheckBox
     Left = 626
@@ -61,7 +53,7 @@ object TerminalForm: TTerminalForm
     Width = 46
     Anchors = [akTop, akRight]
     Caption = '<LF>'
-    TabOrder = 4
+    TabOrder = 3
   end
   object LabelLineEndingReceive: TLabel
     Left = 520
@@ -73,13 +65,14 @@ object TerminalForm: TTerminalForm
     Caption = 'Receive:'
     Layout = tlCenter
   end
-  object ComboBox1: TComboBox
+  object ComboBoxSendLine: TComboBox
     Left = 8
     Height = 23
     Top = 81
     Width = 664
     ItemHeight = 15
-    TabOrder = 5
+    OnEditingDone = ComboBoxSendLineEditingDone
+    TabOrder = 4
   end
   object MemoReceiveData: TMemo
     Left = 8
@@ -89,7 +82,7 @@ object TerminalForm: TTerminalForm
     Lines.Strings = (
       'MemoReceiveData'
     )
-    TabOrder = 6
+    TabOrder = 5
   end
   object LabelLineEndingSend: TLabel
     Left = 328
@@ -108,7 +101,7 @@ object TerminalForm: TTerminalForm
     Width = 49
     Anchors = [akTop, akRight]
     Caption = '<CR>'
-    TabOrder = 7
+    TabOrder = 6
   end
   object CheckBoxReceiveLF1: TCheckBox
     Left = 434
@@ -117,6 +110,6 @@ object TerminalForm: TTerminalForm
     Width = 46
     Anchors = [akTop, akRight]
     Caption = '<LF>'
-    TabOrder = 8
+    TabOrder = 7
   end
 end

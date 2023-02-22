@@ -384,9 +384,9 @@ begin
           else
             for i := 0 to BleScanData[DevIdx].ServicesCount -1 do begin
               SetString(s, BleScanData[DevIdx].Services[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
-              n := BleAssignedServiceUuidToName(s);
+              n := BleAssignedServiceUuidToName(BleScanData[DevIdx].Services[i].Uuid);
               if n = '' then begin
-                n := BleVspServiceUuidToName(s);
+                n := BleVspServiceUuidToName(BleScanData[DevIdx].Services[i].Uuid);
                 if n = '' then
                   PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Caption  := s
                 else begin
@@ -408,7 +408,7 @@ begin
             UtilLog('[ERR] ServiceDataCount too large [' + BleScanData[DevIdx].MacAddress + ']');
           for i := 0 to BleScanData[DevIdx].ServiceDataCount-1 do begin
             SetString(s, BleScanData[DevIdx].ServiceData[i].ServiceUuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
-            n := BleAssignedServiceUuidToName(s);
+            n := BleAssignedServiceUuidToName(BleScanData[DevIdx].ServiceData[i].ServiceUuid);
             if n = '' then
               PeripheralScanPanel[DevIdx].LabelServiceDataId[i].Caption  := s
             else begin

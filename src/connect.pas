@@ -257,9 +257,9 @@ begin
       SetString(s, BleConnectData[i].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
 
       // look for assigned service numbers or proprietary vsp services
-      n := BleAssignedServiceUuidToName(s);
+      n := BleAssignedServiceUuidToName(BleConnectData[i].Services[SvIdx].Uuid);
       if n = '' then begin
-        n := BleVspServiceUuidToName(s);
+        n := BleVspServiceUuidToName(BleConnectData[i].Services[SvIdx].Uuid);
         if n = '' then begin // neither assigned service nor vsp service
           UtilLog('     SV: ' + s);
         end else begin  // vsp service
@@ -311,9 +311,9 @@ begin
         for ChIdx := 0 to BleConnectData[i].Services[SvIdx].CharacteristicCount-1 do begin
           SetLength(BleConnectData[i].Characteristic[SvIdx][ChIdx].data, CharDescMaxLength);
           SetString(s, BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
-          n := BleAssignedCharacteristicUuidToName(s);
+          n := BleAssignedCharacteristicUuidToName(BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid);
           if n = '' then begin
-            n := BleVspCharacteristicUuidToName(s);
+            n := BleVspCharacteristicUuidToName(BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid);
             if n = '' then  // neither assigned service nor vsp service
               UtilLog('         CH: ' + s)
             else  // vsp service
@@ -448,7 +448,7 @@ begin
 
             for DeIdx := 0 to BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].DescriptorCount-1 do begin
               SetString(s, BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Descriptors[DeIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
-              n := BleAssignedDescriptorUuidToName(s);
+              n := BleAssignedDescriptorUuidToName(BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Descriptors[DeIdx].Uuid);
               if n = '' then
                 UtilLog('             DE: ' + s)
               else
@@ -570,8 +570,8 @@ begin
   Inc(BleConnectData[DeIdx].VspActiveCnt);
   DeviceFormElements[DeIdx].Panel[SvIdx].Enabled := false;
 
-  SetString(s, BleConnectData[DeIdx].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
-  UartTerminalStart(BleConnectData[DeIdx].PeripheralHandle, BleConnectData[DeIdx].DeviceName, BleConnectData[DeIdx].MacAddress, s, DeviceFormElements[DeIdx].Panel[SvIdx]);
+  //SetString(s, BleConnectData[DeIdx].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
+  UartTerminalStart(BleConnectData[DeIdx].PeripheralHandle, BleConnectData[DeIdx].DeviceName, BleConnectData[DeIdx].MacAddress, BleConnectData[DeIdx].Services[SvIdx].Uuid, DeviceFormElements[DeIdx].Panel[SvIdx]);
 end;
 
 

@@ -39,21 +39,21 @@ print("""unit AssignedNumbers;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, SimpleBle;
 
 type
   TServiceUuids = record
-    Uuid: String;
+    Uuid: TSimpleBleUuid;
     Name: String;
   end;
 
   TCharacteristicUuids = record
-    Uuid: String;
+    Uuid: TSimpleBleUuid;
     Name: String;
   end;
 
   TDescriptorUuids = record
-    Uuid: String;
+    Uuid: TSimpleBleUuid;
     Name: String;
   end;
 
@@ -70,8 +70,8 @@ url = urlopen("https://raw.githubusercontent.com/NordicSemiconductor/bluetooth-n
 data = json.loads(url.read())
 print("  ServiceUuids: array of TServiceUuids = (", file=outfile)
 for i in data:
-    print("    (Uuid: '"+i['uuid'].lower()+"'; Name: '"+i['name']+"'),", file=outfile)
-print("    (Uuid: ''; Name: '')", file=outfile)
+    print("    (Uuid: (Value: '"+i['uuid'].lower()+"'); Name: '"+i['name']+"'),", file=outfile)
+print("    (Uuid: (Value: ''); Name: '')", file=outfile)
 print("  );", file=outfile)
 print("", file=outfile)
 
@@ -80,8 +80,8 @@ url = urlopen("https://raw.githubusercontent.com/NordicSemiconductor/bluetooth-n
 data = json.loads(url.read())
 print("  CharacteristicUuids: array of TCharacteristicUuids = (", file=outfile)
 for i in data:
-    print("    (Uuid: '"+i['uuid'].lower()+"'; Name: '"+i['name']+"'),", file=outfile)
-print("    (Uuid: ''; Name: '')", file=outfile)
+    print("    (Uuid: (Value: '"+i['uuid'].lower()+"'); Name: '"+i['name']+"'),", file=outfile)
+print("    (Uuid: (Value: ''); Name: '')", file=outfile)
 print("  );", file=outfile)
 print("", file=outfile)
 
@@ -90,8 +90,8 @@ url = urlopen("https://raw.githubusercontent.com/NordicSemiconductor/bluetooth-n
 data = json.loads(url.read())
 print("  DescriptorUuids: array of TDescriptorUuids = (", file=outfile)
 for i in data:
-    print("    (Uuid: '"+i['uuid'].lower()+"'; Name: '"+i['name']+"'),", file=outfile)
-print("    (Uuid: ''; Name: '')", file=outfile)
+    print("    (Uuid: (Value: '"+i['uuid'].lower()+"'); Name: '"+i['name']+"'),", file=outfile)
+print("    (Uuid: (Value: ''); Name: '')", file=outfile)
 print("  );", file=outfile)
 print("", file=outfile)
 

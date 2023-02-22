@@ -11,18 +11,18 @@ uses
 type
   { TTerminalForm }
   TTerminalForm = class(TForm)
-    ButtonSend: TButton;
-    CheckBoxReceiveCR: TCheckBox;
-    CheckBoxReceiveCR1: TCheckBox;
-    CheckBoxReceiveLF: TCheckBox;
-    CheckBoxHexAscii: TCheckBox;
-    CheckBoxReceiveLF1: TCheckBox;
-    ComboBox1: TComboBox;
+    ButtonSend:            TButton;
+    CheckBoxReceiveCR:      TCheckBox;
+    CheckBoxReceiveCR1:     TCheckBox;
+    CheckBoxReceiveLF:      TCheckBox;
+    CheckBoxReceiveLF1:     TCheckBox;
+    ComboBoxSendLine:       TComboBox;
     LabelLineEndingReceive: TLabel;
-    LabelLineEndingSend: TLabel;
-    LabelMacAddress: TLabel;
-    MemoReceiveData: TMemo;
-    TextBoxDeviceName: TEdit;
+    LabelLineEndingSend:    TLabel;
+    LabelMacAddress:        TLabel;
+    MemoReceiveData:        TMemo;
+    TextBoxDeviceName:      TEdit;
+    procedure ComboBoxSendLineEditingDone(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 
   private
@@ -31,7 +31,7 @@ type
 
   end;
 
-procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: string; restore: TPanel);
+procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; restore: TPanel);
 function  UartTerminalIsActive(PerHandle: TSimpleBlePeripheral): Boolean;
 
 var
@@ -47,12 +47,14 @@ type
     Handle:       TSimpleBlePeripheral;
     DeviceName:   string;
     MacAddress:   string;
-    UuidService:  string;
+    UuidService:  TSimpleBleUuid;
     ServiceName:  string;
-    UuidRx:       string;
-    UuidTx:       string;
-    UuidModemIn:  string;
-    UuidModemOut: string;
+    UuidRx:       TSimpleBleUuid;
+    UuidTx:       TSimpleBleUuid;
+    UuidModemIn:  TSimpleBleUuid;
+    HaveModemIn:  Boolean;
+    UuidModemOut: TSimpleBleUuid;
+    HaveModemOut: Boolean;
     IsActive:     Boolean;
   end;
 
@@ -75,10 +77,32 @@ begin
 end;
 
 
+{ Editing of send string is done }
+procedure TTerminalForm.ComboBoxSendLineEditingDone(Sender: TObject);
+begin
+
+end;
+
+
+{ Callback function on notification from tx characteristic }
+procedure UartTxOnNotify(SvUuid: TSimpleBleUuid; ChUuid: TSimpleBleUuid; Data: PByte; Len: NativeUInt; UserData: PPointer);
+begin
+
+end;
+
+
+{ Callback function on notification from tx characteristic }
+procedure UartModemOutOnNotify(SvUuid: TSimpleBleUuid; ChUuid: TSimpleBleUuid; Data: PByte; Len: NativeUInt; UserData: PPointer);
+begin
+
+end;
+
+
 { Start a vsp uart terminal to the device with given peripheral handle and service uuid }
-procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: string; restore: TPanel);
+procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; restore: TPanel);
 var
-  i, j: Integer;
+  i, j, k: Integer;
+  TmpSvUuid, TmpChUuid: TSimpleBleUuid;
 begin
 
   // increment terminals and increase some arrays
@@ -95,18 +119,22 @@ begin
 
   // search rx/tx/modem uart characteristics of service
   for j := 0 to Length(VspServiceUuids)-1 do begin
-      if SvUuid = VspServiceUuids[j].Uuid then begin
+      if CompareChar(SvUuid.Value, VspServiceUuids[j].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1) = 0 then begin
         VspTerminal[i].ServiceName  := VspServiceUuids[j].Name;
         VspTerminal[i].UuidRx       := VspCharacteristicUuids[VspServiceUuids[j].ChRx].Uuid;
         VspTerminal[i].UuidTx       := VspCharacteristicUuids[VspServiceUuids[j].ChTx].Uuid;
         if VspServiceUuids[j].ChModemIn < 0 then  // modem characteristics are optional
-          VspTerminal[i].UuidModemIn := ''
-        else
-          VspTerminal[i].UuidModemIn  := VspCharacteristicUuids[VspServiceUuids[j].ChModemIn].Uuid;
+          VspTerminal[i].HaveModemIn := false
+        else begin
+          VspTerminal[i].HaveModemIn := True;
+          VspTerminal[i].UuidModemIn  := VspCharacteristicUuids[VspServiceUuids[j].ChModemOut].Uuid;
+        end;
         if VspServiceUuids[j].ChModemOut < 0 then  // modem characteristics are optional
-          VspTerminal[i].UuidModemOut := ''
-        else
-          VspTerminal[i].UuidModemOut := VspCharacteristicUuids[VspServiceUuids[j].ChModemOut].Uuid;
+          VspTerminal[i].HaveModemOut := false
+        else begin
+          VspTerminal[i].HaveModemOut := True;
+          VspTerminal[i].UuidModemOut  := VspCharacteristicUuids[VspServiceUuids[j].ChModemOut].Uuid;
+        end;
       end;
   end;
   //UtilLog('VSP: ' + VspTerminal[i].UuidService);
@@ -121,15 +149,30 @@ begin
   TerminalForm[i].Top := UtilGetNextFormTop();
   TerminalForm[i].Left := UtilGetNextFormLeft();
   if VspTerminal[i].DeviceName = '' then begin
-    UtilLog('Open uart terminal: "<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
+    UtilLog('Open UART terminal: "<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
     TerminalForm[i].Caption := '"<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
   end else begin
-      UtilLog('Open uart terminal: "' + VspTerminal[i].DeviceName + '" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
+      UtilLog('Open UART terminal: "' + VspTerminal[i].DeviceName + '" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
       TerminalForm[i].Caption := '"' + VspTerminal[i].DeviceName + '" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
   end;
   TerminalForm[i].TextBoxDeviceName.Caption := VspTerminal[i].DeviceName;
   TerminalForm[i].LabelMacAddress.Caption := 'MAC Address [' + VspTerminal[i].MacAddress + ']';
   TerminalForm[i].Show;
+
+
+  // subscribe to uart tx characteristic notifications
+  if SimpleBlePeripheralNotify(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidTx, @UartTxOnNotify, Nil) = SIMPLEBLE_FAILURE then begin
+    UtilLog('Subscribing to UART TX characteristic failed');
+  end;
+  UtilLog('Subscribed to UART TX characteristic');
+
+  // subscribe to uart ModemOut characteristic notifications
+  if VspTerminal[i].HaveModemOut then begin
+    if SimpleBlePeripheralNotify(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidModemOut, @UartModemOutOnNotify, Nil) = SIMPLEBLE_FAILURE then begin
+      UtilLog('Subscribing to UART ModemOut characteristic failed');
+    end;
+    UtilLog('Subscribed to UART ModemOut characteristic');
+  end;
 
   UtilSetNextFormTop(TerminalForm[i]);
   UtilSetNextFormLeft(TerminalForm[i]);
@@ -155,3 +198,35 @@ end;
 
 end.
 
+
+{
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  // make sure the memo is empty for the example
+  Memo1.Lines.Clear;
+
+  // simulate writing characters to the memo
+  WriteToMemo('hello world' + LineEnding);
+  WriteToMemo('This ');
+  WriteToMemo('tex');
+  WriteToMemo('t ');
+  WriteToMemo('is wr');
+  WriteToMemo('itte');
+  WriteToMemo('n to the ');
+  WriteToMemo('sam');
+  WriteToMemo('e line');
+  WriteToMemo(LineEnding);
+  WriteToMemo('this contains' + LineEnding + 'a newline');
+end;
+
+procedure TForm1.WriteToMemo(S: string);
+begin
+  // memo has to contain at least a single line in order to be
+  // able to use a valid index to the strings
+  if Memo1.Lines.Count < 1 then Memo1.Lines.Add('');
+
+  // add characters to the last line of the memo
+  Memo1.Lines[Pred(Memo1.Lines.Count)] := Memo1.Lines[Pred(Memo1.Lines.Count)] + S;
+end;
+
+}
