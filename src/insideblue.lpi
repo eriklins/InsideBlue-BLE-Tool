@@ -54,7 +54,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="bin\Debug\insideblue"/>
+            <Filename Value="bin\$(TargetOS)-$(TargetCPU)\insideblue"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>

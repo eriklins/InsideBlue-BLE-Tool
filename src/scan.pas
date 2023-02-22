@@ -11,19 +11,21 @@ uses
 type
   { type: device data from BLE scanning }
   TBleScanData = record
-    PeripheralHandle:       TSimpleBlePeripheral;
-    DeviceName:             String;
-    MacAddress:             String;
-    IsConnectable:          Boolean;
-    IsPaired:               Boolean;
-    TxPower:                Integer;
-    Rssi:                   Integer;
-    ServicesCount:          Integer;
-    Services:               array of TSimpleBleService;
-    ManufacturerDataCount:  Integer;
-    ManufacturerData:       array of TSimpleBleManufacturerData;
-    UpdateForm:             Boolean;
-    IsConnected:            Boolean;
+    PeripheralHandle:      TSimpleBlePeripheral;
+    DeviceName:            String;
+    MacAddress:            String;
+    IsConnectable:         Boolean;
+    IsPaired:              Boolean;
+    TxPower:               Integer;
+    Rssi:                  Integer;
+    ServicesCount:         Integer;
+    Services:              array of TSimpleBleService;
+    ServiceDataCount:      Integer;
+    ServiceData:           array of TSimpleBleServiceData;
+    ManufacturerDataCount: Integer;
+    ManufacturerData:      array of TSimpleBleManufacturerData;
+    UpdateForm:            Boolean;
+    IsConnected:           Boolean;
   end;
 
   { type: filters for ble scanning }
@@ -77,7 +79,7 @@ procedure AdapterOnScanFoundUpdated(Adapter: TSimplebleAdapter; Peripheral: TSim
 var
   AdapterIdentifier: PChar;
   PeripheralAddress: PChar;
-  DevIdx, j, k: Integer;
+  DevIdx, j: Integer;
   FlagNewData: Boolean;
   s: String;
   TmpManufacturerData: TSimpleBleManufacturerData;
@@ -144,8 +146,21 @@ begin
     end;
     for j := 0 to BleScanData[DevIdx].ServicesCount-1 do begin
       SimpleBlePeripheralServicesGet(Peripheral, j, BleScanData[DevIdx].Services[j]);
-      SetString(s, BleScanData[DevIdx].Services[j].Uuid.Value, SIMPLEBLE_UUID_STR_LEN);
+      SetString(s, BleScanData[DevIdx].Services[j].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
       UtilLog('     SV: ' + s);
+    end;
+  end;
+
+  if SimpleBlePeripheralServiceDataCount(Peripheral) > 0 then begin
+    if BleScanData[DevIdx].ServiceDataCount = 0 then begin
+      BleScanData[DevIdx].ServiceDataCount := SimpleBlePeripheralServiceDataCount(Peripheral);
+      SetLength(BleScanData[DevIdx].ServiceData, BleScanData[DevIdx].ServiceDataCount);
+    end;
+    for j := 0 to BleScanData[DevIdx].ServiceDataCount-1 do begin
+      SimpleBlePeripheralServiceDataGet(Peripheral, j, BleScanData[DevIdx].ServiceData[j]);
+      SetString(s, BleScanData[DevIdx].ServiceData[j].ServiceUuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
+      UtilLog('     SV: ' + s);
+      UtilLog('         SD: ' + UtilDataToHex(BleScanData[DevIdx].ServiceData[j].Data, BleScanData[DevIdx].ServiceData[j].DataLength));
     end;
   end;
 
@@ -167,10 +182,7 @@ begin
     end;
     SimpleBlePeripheralManufacturerDataGet(Peripheral, 0, BleScanData[DevIdx].ManufacturerData[j]);
     for j := 0 to BleScanData[DevIdx].ManufacturerDataCount-1 do begin
-      s := '';
-      for k := 0 to BleScanData[DevIdx].ManufacturerData[j].DataLength-1 do
-        s := s + IntToHex(BleScanData[DevIdx].ManufacturerData[j].Data[k], 2);
-      UtilLog('     MD: ' + IntToHex(BleScanData[DevIdx].ManufacturerData[j].ManufacturerId, 4) + ':' + s);
+      UtilLog('     MD: ' + IntToHex(BleScanData[DevIdx].ManufacturerData[j].ManufacturerId, 4) + ':' + UtilDataToHex(BleScanData[DevIdx].ManufacturerData[j].Data, BleScanData[DevIdx].ManufacturerData[j].DataLength));
     end;
   end;
 
