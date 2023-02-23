@@ -45,7 +45,6 @@ type
     ToggleBoxCharProp:       array of array of array [0..4] of TToggleBox;
     LabelDescriptorUuid:     array of array of array of TLabel;
     TextBoxDescriptor:       array of array of array of TEdit;
-    ToggleBoxCharProp:       array of array of array [0..4] of TToggleBox;
   end;
 
   { Functions for other units }
@@ -239,8 +238,8 @@ begin
     SetLength(DeviceFormElements[i].LabelCharacteristicUuid, BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].LabelDescriptorUuid,     BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].TextBoxCharacteristic,   BleConnectData[i].ServicesCount);
-    SetLength(DeviceFormElements[i].TextBoxDescriptor,       BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].ToggleBoxCharProp,       BleConnectData[i].ServicesCount);
+    SetLength(DeviceFormElements[i].TextBoxDescriptor,       BleConnectData[i].ServicesCount);
     SetLength(DeviceFormElements[i].CheckBoxHexAscii,        BleConnectData[i].ServicesCount);
     NextPanelVertical := DeviceFormPaddingVertical;
 
@@ -305,8 +304,8 @@ begin
         SetLength(DeviceFormElements[i].LabelCharacteristicUuid[SvIdx], BleConnectData[i].Services[SvIdx].CharacteristicCount);
         SetLength(DeviceFormElements[i].LabelDescriptorUuid[SvIdx],     BleConnectData[i].Services[SvIdx].CharacteristicCount);
         SetLength(DeviceFormElements[i].TextBoxCharacteristic[SvIdx],   BleConnectData[i].Services[SvIdx].CharacteristicCount);
-        SetLength(DeviceFormElements[i].TextBoxDescriptor[SvIdx],       BleConnectData[i].Services[SvIdx].CharacteristicCount);
         SetLength(DeviceFormElements[i].ToggleBoxCharProp[SvIdx],       BleConnectData[i].Services[SvIdx].CharacteristicCount);
+        SetLength(DeviceFormElements[i].TextBoxDescriptor[SvIdx],       BleConnectData[i].Services[SvIdx].CharacteristicCount);
         SetLength(DeviceFormElements[i].CheckBoxHexAscii[SvIdx],        BleConnectData[i].Services[SvIdx].CharacteristicCount);
 
         for ChIdx := 0 to BleConnectData[i].Services[SvIdx].CharacteristicCount-1 do begin
@@ -483,6 +482,7 @@ begin
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height    := 20;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Color     := clForm;
               NextElementVertical := DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Top + DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height + DeviceFormPaddingVertical div 2;
+
               // read descriptor value, store in device data record and display in text box
               SetLength(BleConnectData[i].Descriptor[SvIdx][ChIdx][DeIdx].data, CharDescMaxLength);
               ChData := PByte(BleConnectData[i].Descriptor[SvIdx][ChIdx][DeIdx].data);
@@ -652,7 +652,7 @@ begin
 end;
 
 
-{ Write Command ccharacteristic button clicked }
+{ Write Command characteristic button clicked }
 procedure TDeviceForm.ButtonCharWriteCommand(Sender: TObject);
 var
   i, DeIdx, SvIdx, ChIdx: Integer;
@@ -700,7 +700,7 @@ begin
 end;
 
 
-{ Write Request ccharacteristic button clicked }
+{ Write Request characteristic button clicked }
 procedure TDeviceForm.ButtonCharWriteRequest(Sender: TObject);
 var
   i, DeIdx, SvIdx, ChIdx: Integer;

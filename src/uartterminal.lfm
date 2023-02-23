@@ -3,7 +3,7 @@ object TerminalForm: TTerminalForm
   Height = 537
   Top = 807
   Width = 800
-  Caption = 'Virtual Uart Terminal'
+  Caption = 'InsideBlue - Virtual Serial Port Terminal'
   ClientHeight = 537
   ClientWidth = 800
   OnClose = FormClose

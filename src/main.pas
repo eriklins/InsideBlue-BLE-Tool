@@ -448,6 +448,7 @@ begin
 
   // initialize BLE units
   UtilInit(Self.LogOutput);
+  UtilLog('Welcome to InsideBlue BLE Tool V0.4');
   BleInit;
   ScanInit;
   ConnectInit;

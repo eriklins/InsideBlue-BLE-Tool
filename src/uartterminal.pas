@@ -115,7 +115,6 @@ begin
     Buffer[i] := Byte(s[i+1]);
   ChData := PByte(Buffer);
 
-  UtilLog('Sending: ' + s);
   if SimpleBlePeripheralWriteCommand(VspTerminal[0].Handle, VspTerminal[0].UuidService, VspTerminal[0].UuidRx, ChData, ChLen) = SIMPLEBLE_FAILURE then begin
     ShowMessage('Failed to send data. Check TX max characters.');
     UtilLog('Failed to send uart terminal data.');
