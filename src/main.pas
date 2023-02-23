@@ -54,6 +54,8 @@ type
     LabelManufDataId:       array of TLabel;
     TextBoxManufData:       array of TEdit;
     CheckBoxManufHexAscii:  array of TCheckBox;
+    BevelSeparatorServices: TBevel;
+    BevelSeparatorManufact: TBevel;
   end;
 
   { TScanForm }
@@ -135,10 +137,10 @@ begin
       end;
       SetLength(PeripheralScanPanel, 0);
       ScanClearPeripheralList;
-      UtilLog('BLuetooth is disabled.');
+      UtilLog('Bluetooth is disabled.');
       Exit;
     end else begin
-      UtilLog('BLuetooth is enabled.');
+      UtilLog('Bluetooth is enabled.');
       LabelNofDevices.Caption := 'Press Start Scan to Discover Devices...';
       ButtonStartScan.Enabled := true;
       ButtonStartScan.Caption := 'Start Scan';
@@ -247,6 +249,14 @@ begin
             SetLength(PeripheralScanPanel[DevIdx].TextBoxServiceData, BleScanData[DevIdx].ServicesCount);
             SetLength(PeripheralScanPanel[DevIdx].CheckBoxSrvsHexAscii, BleScanData[DevIdx].ServicesCount);
 
+            PeripheralScanPanel[DevIdx].BevelSeparatorServices        := TBevel.Create(ScanForm);
+            PeripheralScanPanel[DevIdx].BevelSeparatorServices.Parent := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
+            PeripheralScanPanel[DevIdx].BevelSeparatorServices.Top    := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - ScanPanelPaddingVertical;
+            PeripheralScanPanel[DevIdx].BevelSeparatorServices.Left   := ScanPanelPaddingHorizontal - (ScanPanelPaddingHorizontal div 2);
+            PeripheralScanPanel[DevIdx].BevelSeparatorServices.Width  := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].BevelSeparatorServices.Height := 1;
+            PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].BevelSeparatorServices.Top + PeripheralScanPanel[DevIdx].BevelSeparatorServices.Height + ScanPanelPaddingVertical;
+
             PeripheralScanPanel[DevIdx].LabelServices          := TLabel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].LabelServices.Parent   := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].LabelServices.Caption  := 'Services:';
@@ -311,6 +321,14 @@ begin
 
           // if we have manufacturer specific data we add a label and a check box
           if BleScanData[DevIdx].ManufacturerDataCount > 0 then begin
+            PeripheralScanPanel[DevIdx].BevelSeparatorManufact        := TBevel.Create(ScanForm);
+            PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Parent := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
+            PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Top    := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - ScanPanelPaddingVertical;
+            PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Left   := ScanPanelPaddingHorizontal - (ScanPanelPaddingHorizontal div 2);
+            PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Width  := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Height := 1;
+            PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Top + PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Height + ScanPanelPaddingVertical;
+
             PeripheralScanPanel[DevIdx].LabelManufData           := TLabel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].LabelManufData.Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].LabelManufData.Caption   := 'Manufacturer Specific Data:';
@@ -341,20 +359,29 @@ begin
             // label for the company name
             PeripheralScanPanel[DevIdx].LabelManufDataId[i]           := TLabel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
-            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption   := 'Company name or id';
+            //PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption   := 'Company name or id';
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Top       := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - 2*ScanPanelPaddingVertical;
-            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Left      := 50 + 2*ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Left      := ScanPanelPaddingHorizontal;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].AutoSize  := false;
-            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - 50 - PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Width - 5*ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Width - 3*ScanPanelPaddingHorizontal;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Height    := 20;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Font.Size := 10;
+            // check if company id is assigned company name
+            n := BleAssignedCompanyIdToName(LowerCase(IntToHex(BleScanData[DevIdx].ManufacturerData[i].ManufacturerId, 4)));
+            if n = '' then
+              PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption  := 'Unknown (' + IntToHex(BleScanData[DevIdx].ManufacturerData[i].ManufacturerId, 4) + ')'
+            else begin
+              PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption  := n;
+              PeripheralScanPanel[DevIdx].LabelManufDataId[i].ShowHint := true;
+              PeripheralScanPanel[DevIdx].LabelManufDataId[i].Hint     := n + ' (0x' + IntToHex(BleScanData[DevIdx].ManufacturerData[i].ManufacturerId, 4) + ')';
+            end;
             // textbox for the manufacturer data payload
             PeripheralScanPanel[DevIdx].TextBoxManufData[i]           := TEdit.Create(ScanForm);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].ReadOnly  := True;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top       := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - 3*ScanPanelPaddingVertical + PeripheralScanPanel[DevIdx].LabelManufDataId[i].Height;
-            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Left      := 50 + 2*ScanPanelPaddingHorizontal;
-            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - 50 - (3*ScanPanelPaddingHorizontal);
+            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Left      := ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - (2*ScanPanelPaddingHorizontal);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].AutoSize  := false;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Height    := 20;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Color     := clForm;
@@ -379,29 +406,6 @@ begin
         PeripheralScanPanel[DevIdx].LabelRssi.Caption   := 'RSSI: ' + IntToStr(BleScanData[DevIdx].Rssi) + ' dBm';
         PeripheralScanPanel[DevIdx].LabelMacAddress.Caption   := 'MAC Address: ' + UpperCase(BleScanData[DevIdx].MacAddress);
 
-        // add services information if available
-        //if BleScanData[DevIdx].ServicesCount > 0 then begin
-        //  else
-        //    for i := 0 to BleScanData[DevIdx].ServicesCount -1 do begin
-        //      SetString(s, BleScanData[DevIdx].Services[i].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
-        //      n := BleAssignedServiceUuidToName(BleScanData[DevIdx].Services[i].Uuid);
-        //      if n = '' then begin
-        //        n := BleVspServiceUuidToName(BleScanData[DevIdx].Services[i].Uuid);
-        //        if n = '' then
-        //          PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Caption  := s
-        //        else begin
-        //          PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Caption  := n;
-        //          PeripheralScanPanel[DevIdx].LabelServiceUuid[i].ShowHint := true;
-        //          PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Hint     := s;
-        //        end;
-        //      end else begin
-        //        PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Caption  := n;
-        //        PeripheralScanPanel[DevIdx].LabelServiceUuid[i].ShowHint := true;
-        //        PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Hint     := s;
-        //      end;
-        //    end;
-        //end;
-
         // add service data if available
         if BleScanData[DevIdx].ServicesCount > 0 then begin
           for i := 0 to BleScanData[DevIdx].ServicesCount-1 do
@@ -415,20 +419,11 @@ begin
 
         // add manufacturer specific data if available
         if BleScanData[DevIdx].ManufacturerDataCount > 0 then begin
-          for i := 0 to BleScanData[DevIdx].ManufacturerDataCount-1 do begin
-            n := BleAssignedCompanyIdToName(LowerCase(IntToHex(BleScanData[DevIdx].ManufacturerData[i].ManufacturerId, 4)));
-            if n = '' then
-              PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption  := 'Unknown (' + IntToHex(BleScanData[DevIdx].ManufacturerData[i].ManufacturerId, 4) + ')'
-            else begin
-              PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption  := n;
-              PeripheralScanPanel[DevIdx].LabelManufDataId[i].ShowHint := true;
-              PeripheralScanPanel[DevIdx].LabelManufDataId[i].Hint     := n + ' (0x' + IntToHex(BleScanData[DevIdx].ManufacturerData[i].ManufacturerId, 4) + ')';
-            end;
+          for i := 0 to BleScanData[DevIdx].ManufacturerDataCount-1 do
             if PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].State = cbChecked then
               PeripheralScanPanel[DevIdx].TextBoxManufData[i].Caption := UtilDataToAscii(BleScanData[DevIdx].ManufacturerData[i].Data, BleScanData[DevIdx].ManufacturerData[i].DataLength)
             else
               PeripheralScanPanel[DevIdx].TextBoxManufData[i].Caption := UtilDataToHex(BleScanData[DevIdx].ManufacturerData[i].Data, BleScanData[DevIdx].ManufacturerData[i].DataLength);
-          end;
         end;
 
         // clear flag since we updated everything
@@ -444,7 +439,6 @@ end;
 { create main form and initialize SimpleBLE adapter and callbacks }
 procedure TScanForm.FormCreate(Sender: TObject);
 begin
-
   // resize main form to hide log output
   Self.Constraints.MaxWidth := ScrollBoxDevices.Left + ScrollBoxDevices.Width;
   Self.Constraints.MinWidth := ScrollBoxDevices.Left + ScrollBoxDevices.Width;
@@ -470,7 +464,7 @@ begin
   end else if not BleIsEnabled then begin
     ButtonStartScan.Enabled := false;
     LabelNofDevices.Caption := 'Bluetooth is disabled.';
-    UtilLog('BLuetooth is disabled.');
+    UtilLog('Bluetooth is disabled.');
   end;
 
   UtilLog('Init done.');

@@ -40,9 +40,10 @@ type
     LabelServiceUuid:        array of TLabel;
     ButtonVspTerminal:       array of TButton;
     LabelCharacteristicUuid: array of array of TLabel;
-    LabelDescriptorUuid:     array of array of array of TLabel;
     TextBoxCharacteristic:   array of array of TEdit;
     CheckBoxHexAscii:        array of array of TCheckBox;
+    ToggleBoxCharProp:       array of array of array [0..4] of TToggleBox;
+    LabelDescriptorUuid:     array of array of array of TLabel;
     TextBoxDescriptor:       array of array of array of TEdit;
     ToggleBoxCharProp:       array of array of array [0..4] of TToggleBox;
   end;
