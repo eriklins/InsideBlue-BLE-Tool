@@ -14,7 +14,7 @@ unit SimpleBle;
 
 {$UNDEF DYNAMIC_LOADING}
 {$IFDEF WINDOWS}
-  {$DEFINE DYNAMIC_LOADING}    { UNCOMMENT IF YOU WANT DYNAMIC LOADING }
+  //{$DEFINE DYNAMIC_LOADING}    { UNCOMMENT IF YOU WANT DYNAMIC LOADING }
 {$ENDIF}
 
 
@@ -101,12 +101,21 @@ type
   end;
 
   //typedef struct {
-  //  simpleble_uuid_t uuid;
-  //  size_t characteristic_count;
-  //  simpleble_characteristic_t characteristics[SIMPLEBLE_CHARACTERISTIC_MAX_COUNT];
+  //    simpleble_uuid_t uuid;
+  //    size_t data_length;
+  //    uint8_t data[27];
+  //    // Note: The maximum length of a BLE advertisement is 31 bytes.
+  //    // The first byte will be the length of the field,
+  //    // the second byte will be the type of the field,
+  //    // the next two bytes will be the service UUID,
+  //    // and the remaining 27 bytes are the manufacturer data.
+  //    size_t characteristic_count;
+  //    simpleble_characteristic_t characteristics[SIMPLEBLE_CHARACTERISTIC_MAX_COUNT];
   //} simpleble_service_t;
   TSimpleBleService = record
     Uuid: TSimpleBleUuid;
+    DataLength: NativeUInt;
+    Data: array[0..27-1] of Byte;
     CharacteristicCount: NativeUInt;
     Characteristics: array[0..SIMPLEBLE_CHARACTERISTIC_MAX_COUNT-1] of TSimpleBleCharacteristic;
   end;
@@ -123,22 +132,6 @@ type
   //} simpleble_manufacturer_data_t;
   TSimpleBleManufacturerData = record
     ManufacturerId: UInt16;
-    DataLength: NativeUInt;
-    Data: array[0..27-1] of Byte
-  end;
-
-  //typedef struct {
-  //    simpleble_uuid_t service_uuid;
-  //    size_t data_length;
-  //    uint8_t data[27];
-  //    // Note: The maximum length of a BLE advertisement is 31 bytes.
-  //    // The first byte will be the length of the field,
-  //    // the second byte will be the type of the field,
-  //    // the next two bytes will be the service UUID,
-  //    // and the remaining 27 bytes are the manufacturer data.
-  //} simpleble_service_data_t;
-  TSimpleBleServiceData = record
-    ServiceUuid: TSimpleBleUuid;
     DataLength: NativeUInt;
     Data: array[0..27-1] of Byte
   end;
@@ -303,12 +296,6 @@ function SimpleBlePeripheralManufacturerDataCount(Handle: TSimpleBlePeripheral):
 //SIMPLEBLE_EXPORT simpleble_err_t simpleble_peripheral_manufacturer_data_get(simpleble_peripheral_t handle, size_t index, simpleble_manufacturer_data_t* manufacturer_data);
 function SimpleBlePeripheralManufacturerDataGet(Handle: TSimpleBlePeripheral; Index: NativeUInt; var ManufacturerData: TSimpleBleManufacturerData): TSimpleBleErr; cdecl; external SimpleBleExtLibrary name 'simpleble_peripheral_manufacturer_data_get';
 
-//SIMPLEBLE_EXPORT size_t simpleble_peripheral_service_data_count(simpleble_peripheral_t handle);
-function SimpleBlePeripheralServiceDataCount(Handle: TSimpleBlePeripheral): NativeUInt; cdecl; external SimpleBleExtLibrary name 'simpleble_peripheral_service_data_count';
-
-//SIMPLEBLE_EXPORT simpleble_err_t simpleble_peripheral_service_data_get(simpleble_peripheral_t handle, size_t index, simpleble_service_data_t* service_data);
-function SimpleBlePeripheralServiceDataGet(Handle: TSimpleBlePeripheral; Index: NativeUInt; var ServiceData: TSimpleBleServiceData): TSimpleBleErr; cdecl; external SimpleBleExtLibrary name 'simpleble_peripheral_service_data_get';
-
 //SIMPLEBLE_EXPORT simpleble_err_t simpleble_peripheral_read(simpleble_peripheral_t handle, simpleble_uuid_t service, simpleble_uuid_t characteristic, uint8_t** data, size_t* data_length);
 function SimpleBlePeripheralRead(Handle: TSimpleBlePeripheral; service: TSimpleBleUuid; Characteristic: TSimpleBleUuid; var Data: PByte; var DataLength: NativeUInt): TSimpleBleErr; cdecl; external SimpleBleExtLibrary name 'simpleble_peripheral_read';
 
@@ -454,8 +441,6 @@ var
   SimpleBlePeripheralServicesGet : function(Handle: TSimpleBlePeripheral; Index: NativeUInt; var Services: TSimpleBleService): TSimpleBleErr; cdecl;
   SimpleBlePeripheralManufacturerDataCount : function(Handle: TSimpleBlePeripheral): NativeUInt; cdecl;
   SimpleBlePeripheralManufacturerDataGet : function(Handle: TSimpleBlePeripheral; Index: NativeUInt; var ManufacturerData: TSimpleBleManufacturerData): TSimpleBleErr; cdecl;
-  SimpleBlePeripheralServiceDataCount: function(Handle: TSimpleBlePeripheral): NativeUInt; cdecl;
-  SimpleBlePeripheralServiceDataGet: function (Handle: TSimpleBlePeripheral; Index: NativeUInt; var ServiceData: TSimpleBleServiceData): TSimpleBleErr; cdecl;
   SimpleBlePeripheralRead : function(Handle: TSimpleBlePeripheral; service: TSimpleBleUuid; Characteristic: TSimpleBleUuid; var Data: PByte; var DataLength: NativeUInt): TSimpleBleErr; cdecl;
   SimpleBlePeripheralWriteRequest : function(Handle: TSimpleBlePeripheral; service: TSimpleBleUuid; Characteristic: TSimpleBleUuid; Data: PByte; DataLength: NativeUInt): TSimpleBleErr; cdecl;
   SimpleBlePeripheralWriteCommand : function(Handle: TSimpleBlePeripheral; service: TSimpleBleUuid; Characteristic: TSimpleBleUuid; Data: PByte; DataLength: NativeUInt): TSimpleBleErr; cdecl;
@@ -549,8 +534,6 @@ begin
   pointer(SimpleBlePeripheralServicesGet) := Nil;
   pointer(SimpleBlePeripheralManufacturerDataCount) := Nil;
   pointer(SimpleBlePeripheralManufacturerDataGet) := Nil;
-  pointer(SimpleBlePeripheralServiceDataCount) := Nil;
-  pointer(SimpleBlePeripheralServiceDataGet) := Nil;
   pointer(SimpleBlePeripheralRead) := Nil;
   pointer(SimpleBlePeripheralWriteRequest) := Nil;
   pointer(SimpleBlePeripheralWriteCommand) := Nil;
@@ -628,8 +611,6 @@ begin
     pointer(SimpleBlePeripheralServicesGet) := GetProcedureAddress(hLib, 'simpleble_peripheral_services_get');
     pointer(SimpleBlePeripheralManufacturerDataCount) := GetProcedureAddress(hLib, 'simpleble_peripheral_manufacturer_data_count');
     pointer(SimpleBlePeripheralManufacturerDataGet) := GetProcedureAddress(hLib, 'simpleble_peripheral_manufacturer_data_get');
-    pointer(SimpleBlePeripheralServiceDataCount) := GetProcedureAddress(hLib, 'simpleble_peripheral_service_data_count');
-    pointer(SimpleBlePeripheralServiceDataGet) := GetProcedureAddress(hLib, 'simpleble_peripheral_service_data_get');
     pointer(SimpleBlePeripheralRead) := GetProcedureAddress(hLib, 'simpleble_peripheral_read');
     pointer(SimpleBlePeripheralWriteRequest) := GetProcedureAddress(hLib, 'simpleble_peripheral_write_request');
     pointer(SimpleBlePeripheralWriteCommand) := GetProcedureAddress(hLib, 'simpleble_peripheral_write_command');
@@ -695,8 +676,6 @@ begin
     (pointer(SimpleBlePeripheralServicesGet) = Nil) or
     (pointer(SimpleBlePeripheralManufacturerDataCount) = Nil) or
     (pointer(SimpleBlePeripheralManufacturerDataGet) = Nil) or
-    (pointer(SimpleBlePeripheralServiceDataCount) = Nil) or
-    (pointer(SimpleBlePeripheralServiceDataGet) = Nil) or
     (pointer(SimpleBlePeripheralRead) = Nil) or
     (pointer(SimpleBlePeripheralWriteRequest) = Nil) or
     (pointer(SimpleBlePeripheralWriteCommand) = Nil) or

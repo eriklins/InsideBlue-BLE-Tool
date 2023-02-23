@@ -86,7 +86,16 @@ end;
 
 { Callback function on notification from tx characteristic }
 procedure UartTxOnNotify(SvUuid: TSimpleBleUuid; ChUuid: TSimpleBleUuid; Data: PByte; Len: NativeUInt; UserData: PPointer);
+var
+  s: String;
 begin
+
+  // we need at least on line for the below code to work properly
+  if TerminalForm[0].MemoReceiveData.Lines.Count < 1 then TerminalForm[0].MemoReceiveData.Lines.Add('');
+
+  SetString(s, PChar(Data), Len);
+
+  TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + s;
 
 end;
 
@@ -101,8 +110,7 @@ end;
 { Start a vsp uart terminal to the device with given peripheral handle and service uuid }
 procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; restore: TPanel);
 var
-  i, j, k: Integer;
-  TmpSvUuid, TmpChUuid: TSimpleBleUuid;
+  i, j: Integer;
 begin
 
   // increment terminals and increase some arrays
@@ -159,10 +167,12 @@ begin
   TerminalForm[i].LabelMacAddress.Caption := 'MAC Address [' + VspTerminal[i].MacAddress + ']';
   TerminalForm[i].Show;
 
-
   // subscribe to uart tx characteristic notifications
   if SimpleBlePeripheralNotify(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidTx, @UartTxOnNotify, Nil) = SIMPLEBLE_FAILURE then begin
     UtilLog('Subscribing to UART TX characteristic failed');
+    ShowMessage('Cannot subsribe to UART TX characteristic.');
+    TerminalForm[i].Close;
+    Exit;
   end;
   UtilLog('Subscribed to UART TX characteristic');
 
@@ -170,6 +180,10 @@ begin
   if VspTerminal[i].HaveModemOut then begin
     if SimpleBlePeripheralNotify(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidModemOut, @UartModemOutOnNotify, Nil) = SIMPLEBLE_FAILURE then begin
       UtilLog('Subscribing to UART ModemOut characteristic failed');
+      ShowMessage('Cannot subsribe to UART ModemOut characteristic.');
+      SimpleBlePeripheralUnsubscribe(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidTx);
+      TerminalForm[i].Close;
+      Exit;
     end;
     UtilLog('Subscribed to UART ModemOut characteristic');
   end;

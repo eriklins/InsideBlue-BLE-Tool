@@ -20,8 +20,6 @@ type
     Rssi:                  Integer;
     ServicesCount:         Integer;
     Services:              array of TSimpleBleService;
-    ServiceDataCount:      Integer;
-    ServiceData:           array of TSimpleBleServiceData;
     ManufacturerDataCount: Integer;
     ManufacturerData:      array of TSimpleBleManufacturerData;
     UpdateForm:            Boolean;
@@ -151,18 +149,18 @@ begin
     end;
   end;
 
-  if SimpleBlePeripheralServiceDataCount(Peripheral) > 0 then begin
-    if BleScanData[DevIdx].ServiceDataCount = 0 then begin
-      BleScanData[DevIdx].ServiceDataCount := SimpleBlePeripheralServiceDataCount(Peripheral);
-      SetLength(BleScanData[DevIdx].ServiceData, BleScanData[DevIdx].ServiceDataCount);
-    end;
-    for j := 0 to BleScanData[DevIdx].ServiceDataCount-1 do begin
-      SimpleBlePeripheralServiceDataGet(Peripheral, j, BleScanData[DevIdx].ServiceData[j]);
-      SetString(s, BleScanData[DevIdx].ServiceData[j].ServiceUuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
-      UtilLog('     SV: ' + s);
-      UtilLog('         SD: ' + UtilDataToHex(BleScanData[DevIdx].ServiceData[j].Data, BleScanData[DevIdx].ServiceData[j].DataLength));
-    end;
-  end;
+  //if SimpleBlePeripheralServiceDataCount(Peripheral) > 0 then begin
+  //  if BleScanData[DevIdx].ServiceDataCount = 0 then begin
+  //    BleScanData[DevIdx].ServiceDataCount := SimpleBlePeripheralServiceDataCount(Peripheral);
+  //    SetLength(BleScanData[DevIdx].ServiceData, BleScanData[DevIdx].ServiceDataCount);
+  //  end;
+  //  for j := 0 to BleScanData[DevIdx].ServiceDataCount-1 do begin
+  //    SimpleBlePeripheralServiceDataGet(Peripheral, j, BleScanData[DevIdx].ServiceData[j]);
+  //    SetString(s, BleScanData[DevIdx].ServiceData[j].ServiceUuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
+  //    UtilLog('     SV: ' + s);
+  //    UtilLog('         SD: ' + UtilDataToHex(BleScanData[DevIdx].ServiceData[j].Data, BleScanData[DevIdx].ServiceData[j].DataLength));
+  //  end;
+  //end;
 
   // check if we got manufacturer specific data
   if SimpleBlePeripheralManufacturerDataCount(Peripheral) > 0 then begin

@@ -1,7 +1,7 @@
 object TerminalForm: TTerminalForm
-  Left = 213
+  Left = 77
   Height = 537
-  Top = 733
+  Top = 842
   Width = 800
   Caption = 'Virtual Uart Terminal'
   ClientHeight = 537
