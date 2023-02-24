@@ -65,8 +65,9 @@ implementation
 type
   { Data of device characteristic or descriptor (for local copy) }
   TCharDescData = record
-    data: array of Byte;
-    len:  Integer;
+    data:    array of Byte;
+    len:     Integer;
+    restore: Integer;
   end;
 
   { Device data we need during an active device connection }
@@ -84,6 +85,7 @@ type
     HasVspService:    Boolean;
     NotIndActiveCnt:  array of Integer;
     VspActiveCnt:     Integer;
+    AttMtuSize:       Integer;
   end;
 
 const
@@ -103,6 +105,7 @@ const
     FormElementsExtraWidth  = 0;
   {$ENDIF}
   DevicePanelColor = $EED4C0;
+  TextBoxIndicateCnt = 2;
 
 var
   BleConnectData: array of TBleConnectData;
@@ -227,6 +230,10 @@ begin
   BleConnectData[i].IsConnected := true;
   UtilLog('Connected to "' + BleConnectData[i].DeviceName + '" [' + UpperCase(BleConnectData[i].MacAddress) + ']');
   DeviceForm[i].Caption := '"' + BleConnectData[i].DeviceName + '" [' + UpperCase(BleConnectData[i].MacAddress) + '] - Connected.';
+
+  BleConnectData[i].AttMtuSize := SimpleBlePeripheralMtu(BleConnectData[i].PeripheralHandle);
+  UtilLog('MTU Size: ' + IntToStr(BleConnectData[i].AttMtuSize+3));
+  DeviceForm[i].LabelMtuSize.Caption := 'MTU Size: ' + IntToStr(BleConnectData[i].AttMtuSize+3);
 
   Application.ProcessMessages;  // shows the form and elements before connecting because connecting blocks
 
@@ -630,7 +637,7 @@ begin
   SetString(sSv, BleConnectData[DeIdx].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
   SetString(sCh, BleConnectData[DeIdx].Services[SvIdx].Characteristics[ChIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
 
-  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := clGradientInactiveCaption;
+  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := TColor($EED4C0);
   TToggleBox(Sender).Font.Style := [fsBold];
   Application.ProcessMessages;
 
@@ -681,7 +688,7 @@ begin
   SetString(sSv, BleConnectData[DeIdx].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
   SetString(sCh, BleConnectData[DeIdx].Services[SvIdx].Characteristics[ChIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
 
-  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := clGradientInactiveCaption;
+  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := TColor($EED4C0);
   TToggleBox(Sender).Font.Style := [fsBold];
   Application.ProcessMessages;
 
@@ -729,7 +736,7 @@ begin
   SetString(sSv, BleConnectData[DeIdx].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
   SetString(sCh, BleConnectData[DeIdx].Services[SvIdx].Characteristics[ChIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
 
-  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := clGradientInactiveCaption;
+  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := TColor($EED4C0);
   TToggleBox(Sender).Font.Style := [fsBold];
   Application.ProcessMessages;
 
@@ -790,8 +797,10 @@ begin
     Exit;
   end;
 
-  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := clGradientInactiveCaption;
+  BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].restore := TextBoxIndicateCnt;
+  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := TColor($EED4C0);
   Application.ProcessMessages;
+
 
   for i := 0 to Len-1 do
     BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].data[i] := Data[i];
@@ -804,7 +813,6 @@ begin
 
   UtilLog('Notification: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4) +
                             ' Data=' + UtilDataToHex(BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].data, BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].len));
-  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := clForm;
 end;
 
 
@@ -894,7 +902,8 @@ begin
     Exit;
   end;
 
-  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := clGradientInactiveCaption;
+  BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].restore := TextBoxIndicateCnt;
+  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := TColor($EED4C0);
   Application.ProcessMessages;
 
   for i := 0 to Len-1 do
@@ -906,7 +915,6 @@ begin
     DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Caption := UtilDataToHex(BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].data, BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].len);
   UtilLog('Indication: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4) +
                             ' Data=' + UtilDataToHex(BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].data, BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].len));
-  DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := clForm;
 end;
 
 
@@ -994,15 +1002,32 @@ end;
 { Tick timer for device connect functions }
 procedure TDeviceForm.TickTimer(Sender: TObject);
 var
-  idx: Integer;
-  c: Boolean;
+  idx, s, c: Integer;
 begin
   idx := 0;
-  c := false;
   while idx < Length(BleConnectData) do begin  // we loop over all connected device, since we only have this one timer function for all devices
     if BleConnectData[idx].IsConnected then begin
       // get current mtu size, might change during connection
-      DeviceForm[idx].LabelMtuSize.Caption := 'MTU Size: ' + IntToStr(SimpleBlePeripheralMtu(BleConnectData[idx].PeripheralHandle));
+      if SimpleBlePeripheralMtu(BleConnectData[idx].PeripheralHandle) <> BleConnectData[idx].AttMtuSize then begin
+        BleConnectData[idx].AttMtuSize := SimpleBlePeripheralMtu(BleConnectData[idx].PeripheralHandle);
+        UtilLog('MTU Size on "' + BleConnectData[idx].DeviceName + '" [' + UpperCase(BleConnectData[idx].MacAddress) + '] changed: ' + IntToStr(BleConnectData[idx].AttMtuSize+3));
+        DeviceForm[idx].LabelMtuSize.Caption := 'MTU Size: ' + IntToStr(SimpleBlePeripheralMtu(BleConnectData[idx].PeripheralHandle)+3);
+      end;
+      // check if we need to restore the color of some notified characteristic text boxes
+      s := 0;
+      while s < Length(BleConnectData[idx].Services) do begin
+        c := 0;
+        while c < Length(BleConnectData[idx].Characteristic[s]) do begin
+          if BleConnectData[idx].Characteristic[s][c].restore > 0 then begin
+            Dec(BleConnectData[idx].Characteristic[s][c].restore);
+            if BleConnectData[idx].Characteristic[s][c].restore = 0 then begin
+              DeviceFormElements[idx].TextBoxCharacteristic[s][c].Color := clForm;
+            end;
+          end;
+          Inc(c);
+        end;
+        Inc(s);
+      end;
     end;
     Inc(idx);
   end;

@@ -353,7 +353,7 @@ begin
             PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Parent  := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Caption := 'ASCII';
             PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Top     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - 2*ScanPanelPaddingVertical;
-            PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Left    := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Width - 2*ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Left    := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Width - ScanPanelPaddingHorizontal;
             PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Tag     := (DevIdx shl TagPosDev) or (i shl TagPosSrv);
             PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].OnClick := @ScanForm.CheckBoxManufHexAsciiClick;
             // label for the company name
@@ -448,7 +448,7 @@ begin
 
   // initialize BLE units
   UtilInit(Self.LogOutput);
-  UtilLog('Welcome to InsideBlue BLE Tool V0.4');
+  UtilLog('Welcome to InsideBlue BLE Tool V0.5');
   BleInit;
   ScanInit;
   ConnectInit;

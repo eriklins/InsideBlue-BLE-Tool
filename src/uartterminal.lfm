@@ -22,9 +22,9 @@ object TerminalForm: TTerminalForm
     Text = 'TextBoxDeviceName'
   end
   object LabelMacAddress: TLabel
-    Left = 8
+    Left = 264
     Height = 15
-    Top = 40
+    Top = 8
     Width = 184
     Caption = 'MAC Address [AA:BB:CC:DD:EE:FF]'
     ParentFont = False
@@ -39,7 +39,7 @@ object TerminalForm: TTerminalForm
     TabOrder = 6
   end
   object CheckBoxReceiveCR: TCheckBox
-    Left = 576
+    Left = 224
     Height = 19
     Top = 40
     Width = 49
@@ -50,7 +50,7 @@ object TerminalForm: TTerminalForm
     TabOrder = 3
   end
   object CheckBoxReceiveLF: TCheckBox
-    Left = 626
+    Left = 280
     Height = 19
     Top = 40
     Width = 46
@@ -59,11 +59,10 @@ object TerminalForm: TTerminalForm
     TabOrder = 4
   end
   object LabelLineEndingReceive: TLabel
-    Left = 520
+    Left = 168
     Height = 19
     Top = 40
     Width = 48
-    Alignment = taRightJustify
     AutoSize = False
     Caption = 'Receive:'
     Layout = tlCenter
@@ -88,17 +87,16 @@ object TerminalForm: TTerminalForm
     TabOrder = 7
   end
   object LabelLineEndingSend: TLabel
-    Left = 328
+    Left = 8
     Height = 19
     Top = 40
-    Width = 48
-    Alignment = taRightJustify
+    Width = 32
     AutoSize = False
     Caption = 'Send:'
     Layout = tlCenter
   end
   object CheckBoxSendCR: TCheckBox
-    Left = 384
+    Left = 48
     Height = 19
     Top = 40
     Width = 49
@@ -109,7 +107,7 @@ object TerminalForm: TTerminalForm
     TabOrder = 1
   end
   object CheckBoxSendLF: TCheckBox
-    Left = 434
+    Left = 104
     Height = 19
     Top = 40
     Width = 46
@@ -132,5 +130,25 @@ object TerminalForm: TTerminalForm
     Font.Quality = fqDraft
     Font.Style = [fsBold]
     ParentFont = False
+  end
+  object TextBoxCharLen: TEdit
+    Left = 624
+    Height = 20
+    Top = 39
+    Width = 48
+    AutoSize = False
+    NumbersOnly = True
+    OnEditingDone = TextBoxCharLenEditingDone
+    TabOrder = 8
+    Text = 'TextBoxCharLen'
+  end
+  object LabelCharLength: TLabel
+    Left = 488
+    Height = 19
+    Top = 40
+    Width = 136
+    AutoSize = False
+    Caption = 'RX Characteristic Length:'
+    Layout = tlCenter
   end
 end

@@ -1,4 +1,4 @@
-# InsideBlue BLE Tool
+# InsideBlue BLE Tool V0.5
 Welcome to **InsideBlue BLE Tool**, an easy to use cross-platform application for Bluetooth Low-Energy (BLE) connectivity leveraging the PC’s integrated Bluetooth adapter.
 
 You can scan for BLE devices that are advertising and discover their GAP services or manufacturer specific data, engage a connection and access the peripheral GATT table.
@@ -58,11 +58,20 @@ Beside the mandatory TX (from peripheral to central) and RX (from central to per
 ### Length of RX Characteristic
 The length of the peripheral RX characteristic is not known to the central, hence when sending text lines with too many characters, the BLE write operation will fail.
 
+## Pairing Devices
+On operating systems, initiating a connection procedure will automatically run pairing if necessary. This process is entirely managed by the operating system, there isn't much that we can do from the user side.
+
+This has the following implications:
+    • The user will need to manually confirm pairing, until that happens no successful access to protected characteristics is possible.
+    • Removing a device can only be done from the OS Bluetooth settings page.
+    • There is no programmatic way of controlling this process.
+
+This applies at least for Windows OS and might be different on other OS platforms.
+
 ## Limitations
 - Since InsideBlue leverages the PC’s integrated Bluetooth Controller, this ultimately limits what’s achievable from a BT hardware perspective (e.g., number of simultaneous connections).
 - It is not possible to tweak BLE settings like scan interval and/or scan window or similar low-level BLE parameters.
-- Pairing of BLE devices is not yet implmented.
-- Due to a limitation of the underlying BLE library, it’s not possible to properly receive notifications or indications from devices exposing an identcal GATT table (i.e. identical service/characteristic UUIDs).
+- Due to a limitation of the underlying BLE library, it’s not possible to properly receive notifications or indications from devices exposing an identcal GATT table (i.e. identical service/characteristic UUIDs). This will be fixed in an upcoming release.
 - The underlying BLE library does not yet expose properties of the descriptors and hence it’s not yet possible to directly read/write them.
 
 ## Releases / Installation
