@@ -363,7 +363,7 @@ begin
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Top       := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - 2*ScanPanelPaddingVertical;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Left      := ScanPanelPaddingHorizontal;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].AutoSize  := false;
-            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Width - 3*ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Width - 4*ScanPanelPaddingHorizontal;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Height    := 20;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Font.Size := 10;
             // check if company id is assigned company name

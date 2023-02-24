@@ -1,13 +1,14 @@
 object DeviceForm: TDeviceForm
-  Left = 76
+  Left = 71
   Height = 320
-  Top = 398
+  Top = 671
   Width = 432
   Caption = 'Connect Device...'
   ClientHeight = 320
   ClientWidth = 432
   Color = clWhite
   Constraints.MinHeight = 320
+  OnChangeBounds = FormChangeBounds
   OnCloseQuery = FormCloseQuery
   LCLVersion = '2.3.0.0'
   object LabelMacAddress: TLabel
@@ -54,5 +55,21 @@ object DeviceForm: TDeviceForm
     Caption = 'Disconnect'
     OnClick = ButtonDisconnectClick
     TabOrder = 2
+  end
+  object LabelMtuSize: TLabel
+    Left = 368
+    Height = 15
+    Top = 40
+    Width = 54
+    Alignment = taRightJustify
+    Anchors = [akTop, akRight]
+    Caption = 'MTU Size: '
+    ParentFont = False
+  end
+  object Tick: TTimer
+    Interval = 250
+    OnTimer = TickTimer
+    Left = 272
+    Top = 8
   end
 end

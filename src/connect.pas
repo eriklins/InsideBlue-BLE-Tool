@@ -13,9 +13,11 @@ type
   { TDeviceForm }
   TDeviceForm = class(TForm)
     ButtonDisconnect: TButton;
+    LabelMtuSize: TLabel;
     ScrollBoxGatt: TScrollBox;
     TextBoxDeviceName: TEdit;
     LabelMacAddress: TLabel;
+    Tick: TTimer;
     procedure ButtonDisconnectClick(Sender: TObject);
     procedure ButtonVspTerminalClick(Sender: TObject);
     procedure ButtonCharRead(Sender: TObject);
@@ -25,8 +27,9 @@ type
     procedure ButtonCharIndicate(Sender: TObject);
     procedure CheckboxHexAsciiClick(Sender: TObject);
     procedure CharEditingDone(Sender: TObject);
-    procedure ConnectTimerTimer(Sender: TObject);
+    procedure FormChangeBounds(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure TickTimer(Sender: TObject);
 
   private
 
@@ -78,6 +81,7 @@ type
     Descriptor:       array of array of array of TCharDescData;
     IsConnected:      Boolean;
     IsPaired:         Boolean;
+    HasVspService:    Boolean;
     NotIndActiveCnt:  array of Integer;
     VspActiveCnt:     Integer;
   end;
@@ -161,7 +165,6 @@ var
   Buffer: array of Byte;
   ChData: PByte;
   ChLen: NativeUInt;
-  VspServiceFound: Boolean;
 begin
   SetLength(Buffer, CharDescMaxLength);
   ChData := PByte(Buffer);
@@ -198,6 +201,7 @@ begin
     DeviceForm[i].TextBoxDeviceName.Caption := BleConnectData[i].DeviceName;
   end;
   DeviceForm[i].LabelMacAddress.Caption   := 'MAC Address [' + UpperCase(BleConnectData[i].MacAddress) + ']';
+  DeviceForm[i].LabelMtuSize.Caption := '';
   DeviceForm[i].Show;
   UtilSetNextFormTop(DeviceForm[i]);
   UtilSetNextFormLeft(DeviceForm[i]);
@@ -217,12 +221,14 @@ begin
     LabelNoConnect.Font.Style := [fsBold];
     LabelNoConnect.Caption    := 'Failed to connect to device.';
     Exit;
-  end else begin
-    // connect was successful
-    BleConnectData[i].IsConnected := true;
-    UtilLog('Connected to "' + BleConnectData[i].DeviceName + '" [' + UpperCase(BleConnectData[i].MacAddress) + ']');
-    DeviceForm[i].Caption := '"' + BleConnectData[i].DeviceName + '" [' + UpperCase(BleConnectData[i].MacAddress) + '] - Connected.';
   end;
+
+  // connect was successful
+  BleConnectData[i].IsConnected := true;
+  UtilLog('Connected to "' + BleConnectData[i].DeviceName + '" [' + UpperCase(BleConnectData[i].MacAddress) + ']');
+  DeviceForm[i].Caption := '"' + BleConnectData[i].DeviceName + '" [' + UpperCase(BleConnectData[i].MacAddress) + '] - Connected.';
+
+  Application.ProcessMessages;  // shows the form and elements before connecting because connecting blocks
 
   // check for GATT services, characteristics and descriptors
   UtilLog('Reading GATT table:');
@@ -264,11 +270,11 @@ begin
           UtilLog('     SV: ' + s);
         end else begin  // vsp service
           UtilLog('     SV: ' + s + ' (' + n + ')');
-          VspServiceFound := true;
+          BleConnectData[i].HasVspService := true;
         end;
       end else begin  // assigned service
         UtilLog('     SV: ' + s + ' (' + n + ')');
-        VspServiceFound := false;
+        BleConnectData[i].HasVspService := false;
       end;
 
       // show service uuid
@@ -286,7 +292,7 @@ begin
         DeviceFormElements[i].LabelServiceUuid[SvIdx].ShowHint := true;
         DeviceFormElements[i].LabelServiceUuid[SvIdx].Hint     := s;
       end;
-      if VspServiceFound then begin
+      if BleConnectData[i].HasVspService then begin
         DeviceFormElements[i].ButtonVspTerminal[SvIdx]         := TButton.Create(DeviceForm[i]);
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Parent  := DeviceFormElements[i].Panel[SvIdx];
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Tag     := (i shl TagPosDev) or (SvIdx shl TagPosSrv);
@@ -828,7 +834,8 @@ begin
       TToggleBox(Sender).Font.Style := [];
     end else begin  // success...
       Inc(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
-      DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := false;
+      if BleConnectData[DeIdx].HasVspService then
+        DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := false;
       TToggleBox(Sender).Font.Style := [fsBold];
       UtilLog('Subscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
     end;
@@ -843,7 +850,8 @@ begin
     end else begin  // success
       Dec(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
       if BleConnectData[DeIdx].NotIndActiveCnt[SvIdx] = 0 then
-        DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := true;
+        if BleConnectData[DeIdx].HasVspService then
+          DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := true;
       UtilLog('Unsubscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
     end;
   end;
@@ -892,12 +900,10 @@ begin
   for i := 0 to Len-1 do
     BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].data[i] := Data[i];
   BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].len := Len;
-
   if DeviceFormElements[DeIdx].CheckBoxHexAscii[SvIdx][ChIdx].State = cbChecked then  // show data as ascii string
     DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Caption := UtilDataToAscii(BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].data, BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].len)
   else  // show data as hex string
     DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Caption := UtilDataToHex(BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].data, BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].len);
-
   UtilLog('Indication: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4) +
                             ' Data=' + UtilDataToHex(BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].data, BleConnectData[DeIdx].Characteristic[SvIdx][ChIdx].len));
   DeviceFormElements[DeIdx].TextBoxCharacteristic[SvIdx][ChIdx].Color := clForm;
@@ -923,16 +929,17 @@ begin
     if(SimpleBlePeripheralIndicate(BleConnectData[DeIdx].PeripheralHandle,
                               BleConnectData[DeIdx].Services[SvIdx].Uuid,
                               BleConnectData[DeIdx].Services[SvIdx].Characteristics[ChIdx].Uuid,
-                              @PeripheralOnIndicate, Nil) = SIMPLEBLE_FAILURE) then
+                              @PeripheralOnNotify, Nil) = SIMPLEBLE_FAILURE) then
     begin  // failed...
       UtilLog('Subscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
       ShowMessage('Subscribing failed.');
       TToggleBox(Sender).Font.Style := [];
     end else begin  // success...
       Inc(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
-      DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := false;
+      if BleConnectData[DeIdx].HasVspService then
+        DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := false;
       TToggleBox(Sender).Font.Style := [fsBold];
-      UtilLog('Subscribed indications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+      UtilLog('Subscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
     end;
   end else begin  // unsubscribe
     TToggleBox(Sender).Font.Style := [];
@@ -945,8 +952,9 @@ begin
     end else begin  // success
       Dec(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
       if BleConnectData[DeIdx].NotIndActiveCnt[SvIdx] = 0 then
-        DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := true;
-      UtilLog('Unsubscribed indications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+        if BleConnectData[DeIdx].HasVspService then
+          DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := true;
+      UtilLog('Unsubscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
     end;
   end;
 end;
@@ -984,34 +992,32 @@ end;
 
 
 { Tick timer for device connect functions }
-procedure TDeviceForm.ConnectTimerTimer(Sender: TObject);
+procedure TDeviceForm.TickTimer(Sender: TObject);
 var
   idx: Integer;
   c: Boolean;
 begin
   idx := 0;
   c := false;
-  while idx < Length(BleConnectData)-1 do begin
+  while idx < Length(BleConnectData) do begin  // we loop over all connected device, since we only have this one timer function for all devices
     if BleConnectData[idx].IsConnected then begin
-      // check if device is still connected
-      if SimpleBlePeripheralIsConnected(BleConnectData[idx].PeripheralHandle, c) = SIMPLEBLE_FAILURE then begin
-        UtilLog('SIMPLEBLE_FAILURE');
-        BleConnectData[idx].IsConnected := false;
-      end;
-      // not connected anymore, so we issue a message, clean up and close form
-      if not c then begin
-        BleConnectData[idx].IsConnected := false;
-        UtilLog('Device "' + BleConnectData[idx].DeviceName + '" [' + BleConnectData[idx].MacAddress + '] disconnected unexpectedly.');
-        ShowMessage('Device [' + BleConnectData[idx].MacAddress + '] disconnected unexpectedly.');
-        DisconnectDevice(idx);
-        RestoreFormElement.Enabled := True;
-        Delete(BleConnectData, idx, 1);
-        UtilSetNextFormLeft(DeviceForm[idx], true);
-        Delete(DeviceForm, idx, 1);
-      end;
+      // get current mtu size, might change during connection
+      DeviceForm[idx].LabelMtuSize.Caption := 'MTU Size: ' + IntToStr(SimpleBlePeripheralMtu(BleConnectData[idx].PeripheralHandle));
     end;
     Inc(idx);
   end;
+end;
+
+
+{ Form changed bounds, used to set coordinates for device form }
+procedure TDeviceForm.FormChangeBounds(Sender: TObject);
+var
+  idx: Integer;
+begin
+  idx := TForm(Sender).Tag;
+
+  UtilSetNextFormTop(DeviceForm[idx]);
+  UtilSetNextFormLeft(DeviceForm[idx]);
 end;
 
 
