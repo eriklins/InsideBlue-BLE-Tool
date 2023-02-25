@@ -69,10 +69,16 @@ object TerminalForm: TTerminalForm
   end
   object ComboBoxSendLine: TComboBox
     Left = 8
-    Height = 23
+    Height = 25
     Top = 64
     Width = 664
-    ItemHeight = 15
+    Font.CharSet = ANSI_CHARSET
+    Font.Height = -13
+    Font.Name = 'Source Code Pro'
+    Font.Pitch = fpFixed
+    Font.Quality = fqDraft
+    ItemHeight = 17
+    ParentFont = False
     TabOrder = 5
   end
   object MemoReceiveData: TMemo
@@ -80,9 +86,15 @@ object TerminalForm: TTerminalForm
     Height = 434
     Top = 96
     Width = 784
+    Font.CharSet = ANSI_CHARSET
+    Font.Height = -13
+    Font.Name = 'Source Code Pro'
+    Font.Pitch = fpFixed
+    Font.Quality = fqDraft
     Lines.Strings = (
       'MemoReceiveData'
     )
+    ParentFont = False
     ReadOnly = True
     TabOrder = 7
   end
