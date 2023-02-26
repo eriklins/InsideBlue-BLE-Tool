@@ -52,6 +52,9 @@ For known VSP services you can open a terminal window and send/receive text. Lin
 
 (Currently only one VSP terminal can be opened at a time.)
 
+### Line Endings
+You can set line endings for send (`<cr>` and/or `<lf>` will be appended to the send string) and receive (new line will be added to the receive window on `<cr>`, `<lf>` or closing curly bracket of e.g., a JSON string).s
+
 ### Modem In/Out Characteristics
 Beside the mandatory TX (from peripheral to central) and RX (from central to peripheral) characteristics, some VSP services offer additional Modem In/Out characteristics which are used for handshake signalling much like RTS/CTS signals on a real UART. (These are not yet implemented in InsideBlue.)
 
