@@ -1,11 +1,15 @@
 object TerminalForm: TTerminalForm
-  Left = 76
-  Height = 537
-  Top = 807
+  Left = 52
+  Height = 560
+  Top = 502
   Width = 800
+  VertScrollBar.Visible = False
   Caption = 'InsideBlue - Virtual Serial Port Terminal'
-  ClientHeight = 537
+  ClientHeight = 560
   ClientWidth = 800
+  Constraints.MinHeight = 320
+  Constraints.MinWidth = 800
+  OnChangeBounds = FormChangeBounds
   OnClose = FormClose
   LCLVersion = '2.3.0.0'
   object TextBoxDeviceName: TEdit
@@ -34,6 +38,7 @@ object TerminalForm: TTerminalForm
     Height = 24
     Top = 64
     Width = 104
+    Anchors = [akTop, akRight]
     Caption = 'Send'
     OnClick = ButtonSendClick
     TabOrder = 6
@@ -43,7 +48,6 @@ object TerminalForm: TTerminalForm
     Height = 19
     Top = 40
     Width = 49
-    Anchors = [akTop, akRight]
     Caption = '<CR>'
     Checked = True
     State = cbChecked
@@ -54,7 +58,6 @@ object TerminalForm: TTerminalForm
     Height = 19
     Top = 40
     Width = 46
-    Anchors = [akTop, akRight]
     Caption = '<LF>'
     TabOrder = 4
   end
@@ -72,6 +75,7 @@ object TerminalForm: TTerminalForm
     Height = 25
     Top = 64
     Width = 664
+    Anchors = [akTop, akLeft, akRight]
     Font.CharSet = ANSI_CHARSET
     Font.Height = -13
     Font.Name = 'Source Code Pro'
@@ -83,9 +87,10 @@ object TerminalForm: TTerminalForm
   end
   object MemoReceiveData: TMemo
     Left = 8
-    Height = 434
+    Height = 457
     Top = 96
     Width = 784
+    Anchors = [akTop, akLeft, akRight, akBottom]
     Font.CharSet = ANSI_CHARSET
     Font.Height = -13
     Font.Name = 'Source Code Pro'
@@ -96,7 +101,9 @@ object TerminalForm: TTerminalForm
     )
     ParentFont = False
     ReadOnly = True
+    ScrollBars = ssBoth
     TabOrder = 7
+    WordWrap = False
   end
   object LabelLineEndingSend: TLabel
     Left = 8
@@ -112,7 +119,6 @@ object TerminalForm: TTerminalForm
     Height = 19
     Top = 40
     Width = 49
-    Anchors = [akTop, akRight]
     Caption = '<CR>'
     Checked = True
     State = cbChecked
@@ -123,7 +129,6 @@ object TerminalForm: TTerminalForm
     Height = 19
     Top = 40
     Width = 46
-    Anchors = [akTop, akRight]
     Caption = '<LF>'
     TabOrder = 2
   end
@@ -148,6 +153,7 @@ object TerminalForm: TTerminalForm
     Height = 20
     Top = 39
     Width = 48
+    Anchors = [akTop, akRight]
     AutoSize = False
     NumbersOnly = True
     OnEditingDone = TextBoxCharLenEditingDone
@@ -159,8 +165,17 @@ object TerminalForm: TTerminalForm
     Height = 19
     Top = 40
     Width = 136
+    Anchors = [akTop, akRight]
     AutoSize = False
     Caption = 'RX Characteristic Length:'
     Layout = tlCenter
+  end
+  object CheckBoxReceiveJson: TCheckBox
+    Left = 332
+    Height = 19
+    Top = 40
+    Width = 70
+    Caption = '...} (JSON)'
+    TabOrder = 9
   end
 end

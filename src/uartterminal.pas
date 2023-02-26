@@ -13,6 +13,7 @@ type
   TTerminalForm = class(TForm)
     ButtonSend:            TButton;
     CheckBoxReceiveCR:      TCheckBox;
+    CheckBoxReceiveJson: TCheckBox;
     CheckBoxSendCR:     TCheckBox;
     CheckBoxReceiveLF:      TCheckBox;
     CheckBoxSendLF:     TCheckBox;
@@ -26,6 +27,7 @@ type
     MemoReceiveData:        TMemo;
     TextBoxDeviceName:      TEdit;
     procedure ButtonSendClick(Sender: TObject);
+    procedure FormChangeBounds(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure TextBoxCharLenEditingDone(Sender: TObject);
 
@@ -36,6 +38,7 @@ type
   end;
 
 procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; restore: TPanel);
+procedure UartTerminalStop(PerHandle: TSimpleBlePeripheral);
 function  UartTerminalIsActive(PerHandle: TSimpleBlePeripheral): Boolean;
 
 var
@@ -164,6 +167,16 @@ begin
     TerminalForm[0].ComboBoxSendLine.Items.Add(TerminalForm[0].ComboBoxSendLine.Caption);
 end;
 
+procedure TTerminalForm.FormChangeBounds(Sender: TObject);
+var
+  i: Integer;
+begin
+  i := TForm(Sender).Tag;
+
+  UtilSetNextFormTop(TerminalForm[i]);
+  UtilSetNextFormLeft(TerminalForm[i]);
+end;
+
 
 { Callback function on notification from tx characteristic }
 procedure UartTxOnNotify(SvUuid: TSimpleBleUuid; ChUuid: TSimpleBleUuid; Data: PByte; Len: NativeUInt; UserData: PPointer);
@@ -173,14 +186,18 @@ var
 begin
   for i := 0 to Len-1 do begin
     c := Char(Data[i]);
-    if (c <> #13) and (c <> #10) then
+    if (c <> #13) and (c <> #10) then  // check for <cr> or <lf>
       TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + c
-    else begin
+    else begin  // check different line ending charcters
       if (TerminalForm[0].CheckBoxReceiveCR.State = cbChecked) and (c = #13) then
         TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + LineEnding;
       if (TerminalForm[0].CheckBoxReceiveLF.State = cbChecked) and (c = #10) then
         TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + LineEnding;
     end;
+
+    // if JSON closing bracket, then append line ending
+    if (TerminalForm[0].CheckBoxReceiveJson.State = cbChecked) and (c = #125) then
+      TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + LineEnding;
   end;
 end;
 
@@ -242,7 +259,7 @@ begin
   Application.CreateForm(TTerminalForm, TerminalForm[i]);
   TerminalForm[i].Tag := i;
   TerminalForm[i].Top := UtilGetNextFormTop();
-  TerminalForm[i].Left := UtilGetNextFormLeft();
+  TerminalForm[i].Left := UtilGetNextFormLeft(TerminalForm[i]);
   if VspTerminal[i].DeviceName = '' then begin
     UtilLog('Open UART terminal: "<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
     TerminalForm[i].Caption := '"<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
@@ -267,13 +284,10 @@ begin
   // subscribe to uart ModemOut characteristic notifications
   if VspTerminal[i].HasModemOut then begin
     if SimpleBlePeripheralNotify(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidModemOut, @UartModemOutOnNotify, Nil) = SIMPLEBLE_FAILURE then begin
-      UtilLog('Subscribing to UART ModemOut characteristic failed.');
-      ShowMessage('Cannot subsribe to UART ModemOut characteristic.');
-      SimpleBlePeripheralUnsubscribe(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidTx);
-      TerminalForm[i].Close;
-      Exit;
-    end;
-    UtilLog('Subscribed to UART ModemOut characteristic');
+      UtilLog('Subscribing to UART ModemOut characteristic failed, will continue without.');
+      VspTerminal[i].HasModemOut := false;
+    end else
+      UtilLog('Subscribed to UART ModemOut characteristic');
   end;
 
   UtilSetNextFormTop(TerminalForm[i]);
@@ -283,6 +297,24 @@ begin
   TerminalForm[0].ComboBoxSendLine.Items.Add('');
 
   TerminalForm[0].MemoReceiveData.Clear;
+end;
+
+
+{ Stop vsp terminal, unsubsribe characteristics, clean up }
+procedure UartTerminalStop(PerHandle: TSimpleBlePeripheral);
+var
+  i: Integer;
+begin
+  // find vsp terminal and terminal form array index for given peripheral handle
+  i := 0;
+  while i < Length(VspTerminal) do begin
+    if VspTerminal[i].Handle = PerHandle then
+      break;
+    Inc(i);
+  end;
+
+  // close form (also unsubscribes from notifications etc.
+  TerminalForm[i].Close;
 end;
 
 

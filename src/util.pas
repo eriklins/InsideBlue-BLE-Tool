@@ -16,7 +16,7 @@ type
   procedure UtilLog(s: string);
 
   procedure UtilSetNextFormLeft(f: TForm; reset: Boolean = false);
-  function UtilGetNextFormLeft(): Integer;
+  function UtilGetNextFormLeft(f: TForm): Integer;
   procedure UtilSetNextFormTop(f: TForm);
   function UtilGetNextFormTop(): Integer;
 
@@ -61,9 +61,11 @@ begin
     NextFormLeft := NextFormLeft - f.Width - NextFormMargin;
 end;
 
-function UtilGetNextFormLeft(): Integer;
+function UtilGetNextFormLeft(f: TForm): Integer;
 begin
   Result := NextFormLeft;
+  if (NextFormLeft + f.Width) > f.Monitor.Width then
+    Result := f.Monitor.Width - f.Width - NextFormMargin;
 end;
 
 procedure UtilSetNextFormTop(f: TForm);

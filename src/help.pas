@@ -62,7 +62,7 @@ procedure HelpShow(b: TButton);
 begin
   Application.CreateForm(THelpForm, HelpForm);
   HelpForm.Top := UtilGetNextFormTop;
-  HelpForm.Left := UtilGetNextFormLeft;
+  HelpForm.Left := UtilGetNextFormLeft(HelpForm);
   HelpForm.Show;
   UtilSetNextFormTop(HelpForm);
   UtilSetNextFormLeft(HelpForm);
