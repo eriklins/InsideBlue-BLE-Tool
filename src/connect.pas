@@ -839,16 +839,16 @@ begin
     begin  // failed...
       UtilLog('Subscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
       ShowMessage('Subscribing failed.');
+      SuppressUnsubscribe := true;
       TToggleBox(Sender).Font.Style := [];
       TToggleBox(Sender).State := cbUnchecked;
-      SuppressUnsubscribe := true;
     end else begin  // success...
       Inc(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
+      UtilLog('Subscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+      SuppressUnsubscribe := false;
       if BleConnectData[DeIdx].HasVspService then
         DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := false;
       TToggleBox(Sender).Font.Style := [fsBold];
-      UtilLog('Subscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
-      SuppressUnsubscribe := false;
     end;
   end else begin  // unsubscribe
     if not SuppressUnsubscribe then begin
@@ -946,29 +946,33 @@ begin
     begin  // failed...
       UtilLog('Subscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
       ShowMessage('Subscribing failed.');
+      SuppressUnsubscribe := true;
       TToggleBox(Sender).Font.Style := [];
       TToggleBox(Sender).State := cbUnchecked;
     end else begin  // success...
       Inc(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
+      UtilLog('Subscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+      SuppressUnsubscribe := false;
       if BleConnectData[DeIdx].HasVspService then
         DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := false;
       TToggleBox(Sender).Font.Style := [fsBold];
-      UtilLog('Subscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
     end;
   end else begin  // unsubscribe
-    TToggleBox(Sender).Font.Style := [];
-    if(SimpleBlePeripheralUnsubscribe(BleConnectData[DeIdx].PeripheralHandle,
-                                   BleConnectData[DeIdx].Services[SvIdx].Uuid,
-                                   BleConnectData[DeIdx].Services[SvIdx].Characteristics[ChIdx].Uuid) = SIMPLEBLE_FAILURE) then
-    begin  // failed...
-      UtilLog('Unsubscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
-      ShowMessage('Unsubscribing failed.');
-    end else begin  // success
-      Dec(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
-      if BleConnectData[DeIdx].NotIndActiveCnt[SvIdx] = 0 then
-        if BleConnectData[DeIdx].HasVspService then
-          DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := true;
-      UtilLog('Unsubscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+    if not SuppressUnsubscribe then begin
+      TToggleBox(Sender).Font.Style := [];
+      if(SimpleBlePeripheralUnsubscribe(BleConnectData[DeIdx].PeripheralHandle,
+                                     BleConnectData[DeIdx].Services[SvIdx].Uuid,
+                                     BleConnectData[DeIdx].Services[SvIdx].Characteristics[ChIdx].Uuid) = SIMPLEBLE_FAILURE) then
+      begin  // failed...
+        UtilLog('Unsubscribing failed: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+        ShowMessage('Unsubscribing failed.');
+      end else begin  // success
+        Dec(BleConnectData[DeIdx].NotIndActiveCnt[SvIdx]);
+        if BleConnectData[DeIdx].NotIndActiveCnt[SvIdx] = 0 then
+          if BleConnectData[DeIdx].HasVspService then
+            DeviceFormElements[DeIdx].ButtonVspTerminal[SvIdx].Enabled := true;
+        UtilLog('Unsubscribed notifications: [' + BleConnectData[DeIdx].MacAddress + '] "' + BleConnectData[DeIdx].DeviceName + '" SV:' + Copy(sSv, 5, 4) + ' CH:' + Copy(sCh, 5, 4));
+      end;
     end;
   end;
 end;
