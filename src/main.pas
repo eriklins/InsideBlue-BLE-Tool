@@ -316,11 +316,14 @@ begin
                 PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Top + PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Height + 2*ScanPanelPaddingVertical;
               end;
             end;
-
           end;
+        end;
 
-          // if we have manufacturer specific data we add a label and a check box
-          if BleScanData[DevIdx].ManufacturerDataCount > 0 then begin
+        // check if new manufacturing data is available and if we need to add form elements for that
+        j := Length(PeripheralScanPanel[DevIdx].LabelManufDataId);
+        if BleScanData[DevIdx].ManufacturerDataCount > j then begin
+
+          if Length(PeripheralScanPanel[DevIdx].LabelManufDataId) = 0 then begin  // one veryfirst time we might add a separator and label
             PeripheralScanPanel[DevIdx].BevelSeparatorManufact        := TBevel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Parent := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Top    := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - ScanPanelPaddingVertical;
@@ -328,7 +331,6 @@ begin
             PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Width  := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - ScanPanelPaddingHorizontal;
             PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Height := 1;
             PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Top + PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Height + ScanPanelPaddingVertical;
-
             PeripheralScanPanel[DevIdx].LabelManufData           := TLabel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].LabelManufData.Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].LabelManufData.Caption   := 'Manufacturer Specific Data:';
@@ -338,16 +340,11 @@ begin
             PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].LabelManufData.Top + PeripheralScanPanel[DevIdx].LabelManufData.Height + 2*ScanPanelPaddingVertical;
           end;
 
-        end;
-
-        // check if manufacturing data is available and if we need to add form elements for that
-        j := Length(PeripheralScanPanel[DevIdx].LabelManufDataId);
-        if BleScanData[DevIdx].ManufacturerDataCount > j then begin
           SetLength(PeripheralScanPanel[DevIdx].LabelManufDataId, BleScanData[DevIdx].ManufacturerDataCount);
           SetLength(PeripheralScanPanel[DevIdx].TextBoxManufData, BleScanData[DevIdx].ManufacturerDataCount);
           SetLength(PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii, BleScanData[DevIdx].ManufacturerDataCount);
 
-          for i := 0 to BleScanData[DevIdx].ManufacturerDataCount-1 do begin
+          for i := j to BleScanData[DevIdx].ManufacturerDataCount-1 do begin
             // checkbox for ascii/hex view of manufacturer data
             PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i]         := TCheckBox.Create(ScanForm);
             PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Parent  := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
