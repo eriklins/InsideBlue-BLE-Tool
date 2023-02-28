@@ -65,11 +65,11 @@ The length of the peripheral RX characteristic is not known to the central, henc
 On operating systems, initiating a connection procedure will automatically run pairing if necessary. This process is entirely managed by the operating system, there isn't much that we can do from the user side.
 
 This has the following implications:
-    • The user will need to manually confirm pairing, until that happens no successful access to protected characteristics is possible.
-    • Removing a device can only be done from the OS Bluetooth settings page.
-    • There is no programmatic way of controlling this process.
+- The user will need to manually confirm pairing, until that happens no successful access to protected characteristics is possible.
+- Removing a device can only be done from the OS Bluetooth settings page.
+- There is no programmatic way of controlling this process.
 
-This applies at least for Windows OS and might be different on other OS platforms.
+Note(s): This applies at least for Windows OS and might be different on other OS platforms.
 
 ## Limitations
 - Since InsideBlue leverages the PC’s integrated Bluetooth Controller, this ultimately limits what’s achievable from a BT hardware perspective (e.g., number of simultaneous connections).
