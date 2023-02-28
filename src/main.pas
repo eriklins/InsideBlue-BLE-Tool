@@ -323,7 +323,7 @@ begin
         j := Length(PeripheralScanPanel[DevIdx].LabelManufDataId);
         if BleScanData[DevIdx].ManufacturerDataCount > j then begin
 
-          if Length(PeripheralScanPanel[DevIdx].LabelManufDataId) = 0 then begin  // one veryfirst time we might add a separator and label
+          if Length(PeripheralScanPanel[DevIdx].LabelManufDataId) = 0 then begin  // one very first data set we also add a separator and label
             PeripheralScanPanel[DevIdx].BevelSeparatorManufact        := TBevel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Parent := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].BevelSeparatorManufact.Top    := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - ScanPanelPaddingVertical;
@@ -445,7 +445,7 @@ begin
 
   // initialize BLE units
   UtilInit(Self.LogOutput);
-  UtilLog('Welcome to InsideBlue BLE Tool V0.5');
+  UtilLog('Welcome to InsideBlue BLE Tool V0.6');
   BleInit;
   ScanInit;
   ConnectInit;

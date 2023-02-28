@@ -37,17 +37,23 @@ const
 
   // proprietary ble uart services, indexes point to characteristics in VspCharacteristicUuids (set to -1 if some do not exist)
   VspServiceUuids: array of TVspServiceUuids = (
-    (Uuid: (Value: '569a1101-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Connectivity VSP Service'; ChRx: 0; ChTx: 1; ChModemIn: 2;  ChModemOut: 3),
-    (Uuid: (Value: '6e400001-b5a3-f393-e0a9-e50e24dcca9e'); Name: 'Nordic UART Service (NUS)';      ChRx: 4; ChTx: 6; ChModemIn: -1; ChModemOut: -1)
+    (Uuid: (Value: '569a1101-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Connectivity VSP Service';          ChRx: 0; ChTx: 1; ChModemIn: 2;  ChModemOut: 3),
+    (Uuid: (Value: '6e400001-b5a3-f393-e0a9-e50e24dcca9e'); Name: 'Nordic UART Service (NUS)';               ChRx: 4; ChTx: 5; ChModemIn: -1; ChModemOut: -1),
+    (UUid: (Value: '2456e1b9-26e2-8f83-e744-f34f01e9d701'); Name: 'u-connectXpress BLE Serial Port Service'; ChRx: 6; ChTx: 7; ChModemIn: -1; ChModemOut: -1)
+
   );
 
   VspCharacteristicUuids: array of TVspCharacteristicUuids = (  // proprietary ble uart characteristics
-    (Uuid: (Value: '569a2001-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp Rx'),
-    (Uuid: (Value: '569a2000-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp Tx'),
-    (Uuid: (Value: '569a2003-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp ModemIn'),
-    (Uuid: (Value: '569a2002-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp ModemOut'),
-    (Uuid: (Value: '6e400002-b5a3-f393-e0a9-e50e24dcca9e'); Name: 'NUS Rx'),
-    (Uuid: (Value: '6e400003-b5a3-f393-e0a9-e50e24dcca9e'); Name: 'NUS TX')
+    (Uuid: (Value: '569a2001-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp Rx'),        // 0
+    (Uuid: (Value: '569a2000-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp Tx'),        // 1
+    (Uuid: (Value: '569a2003-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp ModemIn'),   // 2
+    (Uuid: (Value: '569a2002-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp ModemOut'),  // 3
+
+    (Uuid: (Value: '6e400002-b5a3-f393-e0a9-e50e24dcca9e'); Name: 'NUS Rx'),  // 4
+    (Uuid: (Value: '6e400003-b5a3-f393-e0a9-e50e24dcca9e'); Name: 'NUS TX'),  // 5
+
+    (Uuid: (Value: '2456e1b9-26e2-8f83-e744-f34f01e9d703'); Name: 'Serial Port FIFO / Rx'),   // 6
+    (Uuid: (Value: '2456e1b9-26e2-8f83-e744-f34f01e9d704'); Name: 'Serial Port Credit / Tx')  // 7
   );
 
   VspFuncRx       = 0;
