@@ -1,4 +1,4 @@
-# InsideBlue BLE Tool V0.5
+# InsideBlue BLE Tool V0.6
 Welcome to **InsideBlue BLE Tool**, an easy to use cross-platform application for Bluetooth Low-Energy (BLE) connectivity leveraging the PC’s integrated Bluetooth adapter.
 
 You can scan for BLE devices that are advertising and discover their GAP services or manufacturer specific data, engage a connection and access the peripheral GATT table.

@@ -261,14 +261,14 @@ begin
   TerminalForm[i].Top := UtilGetNextFormTop();
   TerminalForm[i].Left := UtilGetNextFormLeft(TerminalForm[i]);
   if VspTerminal[i].DeviceName = '' then begin
-    UtilLog('Open UART terminal: "<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
-    TerminalForm[i].Caption := '"<unknown name>" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
+    UtilLog('Open UART terminal: "<unknown name>" [' + UpperCase(VspTerminal[i].MacAddress) + '] - ' + VspTerminal[i].ServiceName);
+    TerminalForm[i].Caption := '"<unknown name>" [' + UpperCase(VspTerminal[i].MacAddress) + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
   end else begin
-      UtilLog('Open UART terminal: "' + VspTerminal[i].DeviceName + '" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName);
-      TerminalForm[i].Caption := '"' + VspTerminal[i].DeviceName + '" [' + VspTerminal[i].MacAddress + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
+      UtilLog('Open UART terminal: "' + VspTerminal[i].DeviceName + '" [' + UpperCase(VspTerminal[i].MacAddress) + '] - ' + VspTerminal[i].ServiceName);
+      TerminalForm[i].Caption := '"' + VspTerminal[i].DeviceName + '" [' + UpperCase(VspTerminal[i].MacAddress) + '] - ' + VspTerminal[i].ServiceName + ' - Virtual Uart Terminal';
   end;
   TerminalForm[i].TextBoxDeviceName.Caption := VspTerminal[i].DeviceName;
-  TerminalForm[i].LabelMacAddress.Caption   := 'MAC Address [' + VspTerminal[i].MacAddress + ']';
+  TerminalForm[i].LabelMacAddress.Caption   := 'MAC Address [' + UpperCase(VspTerminal[i].MacAddress) + ']';
   TerminalForm[i].TextBoxCharLen.Caption    := IntToStr(VspTerminal[i].RxCharLength);
   TerminalForm[i].Show;
 
