@@ -183,22 +183,25 @@ procedure UartTxOnNotify(SvUuid: TSimpleBleUuid; ChUuid: TSimpleBleUuid; Data: P
 var
   i: Integer;
   c: Char;
+  s: String;
 begin
+  s := '';
   for i := 0 to Len-1 do begin
     c := Char(Data[i]);
     if (c <> #13) and (c <> #10) then  // check for <cr> or <lf>
-      TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + c
+      s := s + c
     else begin  // check different line ending charcters
       if (TerminalForm[0].CheckBoxReceiveCR.State = cbChecked) and (c = #13) then
-        TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + LineEnding;
+        s := s + LineEnding;
       if (TerminalForm[0].CheckBoxReceiveLF.State = cbChecked) and (c = #10) then
-        TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + LineEnding;
+        s := s + LineEnding;
     end;
 
     // if JSON closing bracket, then append line ending
     if (TerminalForm[0].CheckBoxReceiveJson.State = cbChecked) and (c = #125) then
-      TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + LineEnding;
+      s := s + LineEnding;
   end;
+  TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] := TerminalForm[0].MemoReceiveData.Lines[Pred(TerminalForm[0].MemoReceiveData.Lines.Count)] + s;
 end;
 
 
