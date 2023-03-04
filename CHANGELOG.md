@@ -3,6 +3,24 @@ This changelog document (CHANGELOG.md) is a summary of all notable changes to th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses the Markdown formatting syntax. You can find the original example and template [here](https://github.com/olivierlacan/keep-a-changelog/blob/main/CHANGELOG.md).
 
 
+## [0.5] - 2023-02-24
+
+### Added
+
+- Added MTU size to device connect window and form. Longer data strings are now split into multiple BLE writes.
+- Added visual effect (blinking) to the text data field for received notifications via color change function.
+
+### Changed
+
+- VSP terminal now uses MTU size -3 as presumption for the RX characteristic max length. This value can also be set manually.
+
+### Fixed
+- Fixed bug when subscribing to notifications or indications on non-VSP services / characteristics.
+
+### Removed
+
+- Removed redundant code in tick timer for disconnect.
+
 
 ## [0.4] - 2023-02-23
 
@@ -33,5 +51,6 @@ Initial release on GitHub under https://github.com/eriklins/InsideBlue-BLE-Tool.
 
 
 
+[0.5]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.4...v0.5
 [0.4]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.3...v0.4
 [0.3]: https://github.com/eriklins/InsideBlue-BLE-Tool/releases/tag/v0.3
