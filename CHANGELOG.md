@@ -3,6 +3,33 @@ This changelog document (CHANGELOG.md) is a summary of all notable changes to th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses the Markdown formatting syntax. You can find the original example and template [here](https://github.com/olivierlacan/keep-a-changelog/blob/main/CHANGELOG.md).
 
 
+
+## [0.6] - 2023-02-28
+
+### Added
+
+- Added check for the device connect window height to not exceed desktop in case of a large GATT table.
+- Added closing curly bracket as possible line endings on VSP terminal (useful for e.g. JSON data).
+- Added support for the u-blox u-connectXpress (formerly uCS) BLE Serial Port Service.
+- Added check for the position of next window to not exceed desktop.
+
+### Changed
+
+- If no GATT characteristics are found for ModemIn and ModemOut, VSP terminal will continue without.
+- Changed the VSP terminal font to a more monospace-like terminal font. Source Code Pro is now used.
+- The VSP terminal can now be resized and automatically closes when a BLE device is disconnected.
+
+### Fixed
+
+- Fixed MAC address on VSP terminal. The MAC address is now displayed correctly in upper case format (instead of lower case).
+- Fixed attempt to unsubscribe from notifications and indications when subscription failed before (still not fully working).
+- Fixed form issues in the scan window (missing label for manufacturer data, duplicate text box for manufacturer data).
+
+### Removed
+
+- Removed counting of active VSP terminals, not needed.
+
+
 ## [0.5] - 2023-02-24
 
 ### Added
@@ -51,6 +78,7 @@ Initial release on GitHub under https://github.com/eriklins/InsideBlue-BLE-Tool.
 
 
 
+[0.6]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.5...v0.6
 [0.5]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.4...v0.5
 [0.4]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.3...v0.4
 [0.3]: https://github.com/eriklins/InsideBlue-BLE-Tool/releases/tag/v0.3
