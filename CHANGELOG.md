@@ -4,6 +4,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 
 
+## [Unreleased]
+
+### Added
+
+- None.
+
+### Changed
+
+- None.
+
+### Fixed
+
+- Reduced flickering in VSP terminal when receiving large chunks of data.
+
+### Removed
+
+- None.
+
+
 ## [0.6] - 2023-02-28
 
 ### Added
@@ -78,6 +97,7 @@ Initial release on GitHub under https://github.com/eriklins/InsideBlue-BLE-Tool.
 
 
 
+[Unreleased]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.6...HEAD
 [0.6]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.5...v0.6
 [0.5]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.4...v0.5
 [0.4]: https://github.com/eriklins/InsideBlue-BLE-Tool/compare/v0.3...v0.4
