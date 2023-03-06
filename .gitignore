@@ -1,4 +1,12 @@
+# InsideBlue BLE Tool
 **/bin
 **/lib
 **/release_packages
 *.lps
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project

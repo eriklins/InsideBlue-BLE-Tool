@@ -43,7 +43,11 @@ Depending on the properties of each characteristic different buttons get added t
 Data from/to a characteristic gets displayed or entered into a text field, which is either read/write or read only. You can switch the presentation between HEX numbers or ASCII string. When set to ASCII, non-printable characters are displayed as a black square.
 
 #### Virtual Serial Port (VSP)
-Beside the official Bluetooth list of services, there exist proprietary services to expose a virtual serial port service (similar to SPP service from Bluetooth Classic). InsideBlue knows some of these and if recognized it will show their names as well along with a button to fire up a simple VSP terminal window.
+Beside the official Bluetooth list of services, there exist proprietary services to expose a virtual serial port service (similar to SPP service from Bluetooth Classic). InsideBlue knows some of these and if recognized it will show their names as well along with a button to fire up a simple VSP terminal window. Please find below a list of manufactures and proprietary GATT services / characteristics which are currently supported.
+
+1. **Laird Connectivity** with the [Virtual Serial Port (VSP)](https://www.lairdconnect.com/documentation/application-note-laird-custom-ble-serial-port-service),
+2. **u-blox** with the [u-connectXpress BLE Serial Port Service](https://content.u-blox.com/sites/default/files/u-connectXpress-LowEnergySerialPortService_ProtocolSpec_UBX-16011192.pdf),
+3. **Nordic Semiconductors** with the [Nordic UART Service (NUS)](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/1.4.0/nrf/include/bluetooth/services/nus.html).
 
 ## UART VSP Terminal
 For known VSP services you can open a terminal window and send/receive text. Line endings can be selected for both send and receive individually. Each sent text line will be added to a history drop down menu and can be selected later for sending certain lines again.
