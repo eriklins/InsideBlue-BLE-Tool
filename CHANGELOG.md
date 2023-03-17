@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ### Added
 
-- None.
+- Updated simpleble.pas with SimpleBleGetVersion().
+- Added output of SimpleBLE version to log on start.
 
 ### Changed
 
