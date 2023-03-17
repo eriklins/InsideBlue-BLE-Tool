@@ -375,6 +375,8 @@ procedure SimpleBleloggingSetCallback(Callback: TCallbackLog); cdecl; external S
 //SIMPLEBLE_EXPORT simpleble_os_t get_operating_system(void);
 function SimpleBleGetOperatingSystem(): TSimpleBleOs; cdecl; external SimpleBleExtLibrary name 'get_operating_system';
 
+//SIMPLEBLE_EXPORT const char* get_simpleble_version(void);
+function SimpleBleGetVersion(): PChar; cdecl; external SimpleBleExtLibrary name 'get_simpleble_version';
 
 {$ELSE}
 
@@ -481,6 +483,7 @@ var
 
 //var
   SimpleBleGetOperatingSystem : function(): TSimpleBleOs; cdecl;
+  SimpleBleGetVersion : function(): PChar; cdecl;
 
 {$ENDIF}
 
@@ -554,6 +557,8 @@ begin
 
   { functions from SimpleBLE utils.h }
   pointer(SimpleBleGetOperatingSystem) := Nil;
+  pointer(SimpleBleGetVersion) := Nil;
+  
 end;
 
 
@@ -631,7 +636,8 @@ begin
 
     { functions from SimpleBLE utils.h }
     pointer(SimpleBleGetOperatingSystem) := GetProcedureAddress(hLib, 'get_operating_system');
-
+	pointer(SimpleBleGetVersion) := GetProcedureAddress(hLib, 'get_simpleble_version');
+	
   except
     SimpleBleUnloadLibrary;
     exit;
@@ -695,7 +701,8 @@ begin
     (pointer(SimpleBleloggingSetCallback) = Nil) or
 
     { functions from SimpleBLE utils.h }
-    (pointer(SimpleBleGetOperatingSystem) = Nil)
+    (pointer(SimpleBleGetOperatingSystem) = Nil) or
+	(pointer(SimpleBleGetVersion) = Nil)
 
   then
   begin
