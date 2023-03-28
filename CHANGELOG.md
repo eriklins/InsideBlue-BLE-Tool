@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 ### Fixed
 
 - Reduced flickering in VSP terminal when receiving large chunks of data.
+- Fixed bug when searching VSP which is also an assigned service (didn't show vsp terminal button).
 
 ### Removed
 

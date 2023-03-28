@@ -270,18 +270,18 @@ begin
       SetString(s, BleConnectData[i].Services[SvIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
 
       // look for assigned service numbers or proprietary vsp services
-      n := BleAssignedServiceUuidToName(BleConnectData[i].Services[SvIdx].Uuid);
+      n := BleVspServiceUuidToName(BleConnectData[i].Services[SvIdx].Uuid);
       if n = '' then begin
-        n := BleVspServiceUuidToName(BleConnectData[i].Services[SvIdx].Uuid);
+        n := BleAssignedServiceUuidToName(BleConnectData[i].Services[SvIdx].Uuid);
         if n = '' then begin // neither assigned service nor vsp service
-          UtilLog('     SV: ' + s);
-        end else begin  // vsp service
-          UtilLog('     SV: ' + s + ' (' + n + ')');
-          BleConnectData[i].HasVspService := true;
+          UtilLog('     SV1: ' + s);
+        end else begin  // assigned service
+          UtilLog('     SV2: ' + s + ' (' + n + ')');
+          BleConnectData[i].HasVspService := false;
         end;
-      end else begin  // assigned service
-        UtilLog('     SV: ' + s + ' (' + n + ')');
-        BleConnectData[i].HasVspService := false;
+      end else begin  // vsp service
+        UtilLog('     SV3: ' + s + ' (' + n + ')');
+        BleConnectData[i].HasVspService := true;
       end;
 
       // show service uuid
@@ -300,6 +300,7 @@ begin
         DeviceFormElements[i].LabelServiceUuid[SvIdx].Hint     := s;
       end;
       if BleConnectData[i].HasVspService then begin
+        UtilLog('HasVspService');
         DeviceFormElements[i].ButtonVspTerminal[SvIdx]         := TButton.Create(DeviceForm[i]);
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Parent  := DeviceFormElements[i].Panel[SvIdx];
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Tag     := (i shl TagPosDev) or (SvIdx shl TagPosSrv);
