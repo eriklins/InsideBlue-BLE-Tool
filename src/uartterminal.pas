@@ -14,6 +14,7 @@ type
     ButtonSend:            TButton;
     CheckBoxReceiveCR:      TCheckBox;
     CheckBoxReceiveJson: TCheckBox;
+    CheckBoxUseWriteReq: TCheckBox;
     CheckBoxSendCR:     TCheckBox;
     CheckBoxReceiveLF:      TCheckBox;
     CheckBoxSendLF:     TCheckBox;
@@ -27,6 +28,7 @@ type
     MemoReceiveData:        TMemo;
     TextBoxDeviceName:      TEdit;
     procedure ButtonSendClick(Sender: TObject);
+    procedure CheckBoxUseWriteReqChange(Sender: TObject);
     procedure FormChangeBounds(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure TextBoxCharLenEditingDone(Sender: TObject);
@@ -37,7 +39,7 @@ type
 
   end;
 
-procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; restore: TPanel);
+procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; HasWrCmd: Boolean; HasWrReq: Boolean; restore: TPanel);
 procedure UartTerminalStop(PerHandle: TSimpleBlePeripheral);
 function  UartTerminalIsActive(PerHandle: TSimpleBlePeripheral): Boolean;
 
@@ -51,25 +53,27 @@ implementation
 
 type
   TBleVspTerminal = record
-    Handle:       TSimpleBlePeripheral;
-    DeviceName:   string;
-    MacAddress:   string;
-    UuidService:  TSimpleBleUuid;
-    ServiceName:  string;
-    UuidRx:       TSimpleBleUuid;
-    UuidTx:       TSimpleBleUuid;
-    UuidModemIn:  TSimpleBleUuid;
-    HasModemIn:   Boolean;
-    UuidModemOut: TSimpleBleUuid;
-    HasModemOut:  Boolean;
-    RxCharLength: Integer;
-    IsActive:     Boolean;
+    Handle:         TSimpleBlePeripheral;
+    DeviceName:     string;
+    MacAddress:     string;
+    UuidService:    TSimpleBleUuid;
+    ServiceName:    string;
+    UuidRx:         TSimpleBleUuid;
+    UuidTx:         TSimpleBleUuid;
+    UuidModemIn:    TSimpleBleUuid;
+    HasModemIn:     Boolean;
+    UuidModemOut:   TSimpleBleUuid;
+    HasModemOut:    Boolean;
+    RxCharLength:   Integer;
+    HasVspWriteCmd: Boolean;
+    HasVspWriteReq: Boolean;
+    IsActive:       Boolean;
   end;
 
 var
   VspTerminal: array of TBleVspTerminal;
   RestorePanel: TPanel;
-
+  FlagUseWriteReq: Boolean;
 
 { TTerminalForm }
 
@@ -145,10 +149,18 @@ begin
     i := i + 1;
     j := j + 1;
     if (j = VspTerminal[0].RxCharLength) or (i = ChLen) then begin
-      if SimpleBlePeripheralWriteCommand(VspTerminal[0].Handle, VspTerminal[0].UuidService, VspTerminal[0].UuidRx, ChData, j) = SIMPLEBLE_FAILURE then begin
-        ShowMessage('Failed to send data. Check TX max characters.');
-        UtilLog('Failed to send uart terminal data.');
-        exit;
+      if FlagUseWriteReq then begin
+        if SimpleBlePeripheralWriteRequest(VspTerminal[0].Handle, VspTerminal[0].UuidService, VspTerminal[0].UuidRx, ChData, j) = SIMPLEBLE_FAILURE then begin
+          ShowMessage('Failed to send data (WR request). Check TX max characters.');
+          UtilLog('Failed to send uart terminal data.');
+          exit;
+        end;
+      end else begin
+        if SimpleBlePeripheralWriteCommand(VspTerminal[0].Handle, VspTerminal[0].UuidService, VspTerminal[0].UuidRx, ChData, j) = SIMPLEBLE_FAILURE then begin
+          ShowMessage('Failed to send data (WR command). Check TX max characters.');
+          UtilLog('Failed to send uart terminal data.');
+          exit;
+        end;
       end;
       j := 0;
     end;
@@ -165,6 +177,14 @@ begin
     end;
   if not exist then
     TerminalForm[0].ComboBoxSendLine.Items.Add(TerminalForm[0].ComboBoxSendLine.Caption);
+end;
+
+procedure TTerminalForm.CheckBoxUseWriteReqChange(Sender: TObject);
+begin
+  if TerminalForm[0].CheckBoxUseWriteReq.State = cbChecked then
+    FlagUseWriteReq := true
+  else
+    FlagUseWriteReq := false;
 end;
 
 procedure TTerminalForm.FormChangeBounds(Sender: TObject);
@@ -213,7 +233,7 @@ end;
 
 
 { Start a vsp uart terminal to the device with given peripheral handle and service uuid }
-procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; restore: TPanel);
+procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; HasWrCmd: Boolean; HasWrReq: Boolean; restore: TPanel);
 var
   i, j: Integer;
 begin
@@ -229,12 +249,14 @@ begin
   SetLength(VspTerminal, i+1);
   SetLength(TerminalForm, i+1);
 
-  VspTerminal[i].Handle       := PerHandle;
-  VspTerminal[i].UuidService  := SvUuid;
-  VspTerminal[i].DeviceName   := DevName;
-  VspTerminal[i].MacAddress   := MacAddr;
-  VspTerminal[i].IsActive     := true;
-  VspTerminal[i].RxCharLength := SimpleBlePeripheralMtu(VspTerminal[i].Handle);
+  VspTerminal[i].Handle         := PerHandle;
+  VspTerminal[i].UuidService    := SvUuid;
+  VspTerminal[i].DeviceName     := DevName;
+  VspTerminal[i].MacAddress     := MacAddr;
+  VspTerminal[i].IsActive       := true;
+  VspTerminal[i].RxCharLength   := SimpleBlePeripheralMtu(VspTerminal[i].Handle);
+  VspTerminal[i].HasVspWriteCmd := HasWrCmd;
+  VspTerminal[i].HasVspWriteReq := HasWrReq;
   RestorePanel := restore;
 
   // search rx/tx/modem uart characteristics of service
@@ -273,6 +295,18 @@ begin
   TerminalForm[i].TextBoxDeviceName.Caption := VspTerminal[i].DeviceName;
   TerminalForm[i].LabelMacAddress.Caption   := 'MAC Address [' + UpperCase(VspTerminal[i].MacAddress) + ']';
   TerminalForm[i].TextBoxCharLen.Caption    := IntToStr(VspTerminal[i].RxCharLength);
+  if VspTerminal[i].HasVspWriteCmd and VspTerminal[i].HasVspWriteReq then
+    FlagUseWriteReq := false
+  else begin
+    if VspTerminal[i].HasVspWriteCmd then begin
+      TerminalForm[i].CheckBoxUseWriteReq.Visible := false;
+      FlagUseWriteReq := false;
+    end;
+    if VspTerminal[i].HasVspWriteReq then begin
+      TerminalForm[i].CheckBoxUseWriteReq.Visible := false;
+      FlagUseWriteReq := true;
+    end;
+  end;
   TerminalForm[i].Show;
 
   // subscribe to uart tx characteristic notifications

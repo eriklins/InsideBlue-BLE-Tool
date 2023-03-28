@@ -1,4 +1,4 @@
-# InsideBlue BLE Tool V0.6
+# InsideBlue BLE Tool V0.6.1
 Welcome to **InsideBlue BLE Tool**, an easy to use cross-platform application for Bluetooth Low-Energy (BLE) connectivity leveraging the PC’s integrated Bluetooth adapter.
 
 You can scan for BLE devices that are advertising and discover their GAP services or manufacturer specific data, engage a connection and access the peripheral GATT table.
@@ -64,6 +64,9 @@ Beside the mandatory TX (from peripheral to central) and RX (from central to per
 
 ### Length of RX Characteristic
 The length of the peripheral RX characteristic is not known to the central, hence when sending text lines with too many characters, the BLE write operation will fail.
+
+### WriteCommand/WriteRequest
+Depending on the write properties of the RX characteristic you can select to use write request or write command, if both are exposed.
 
 ## Pairing Devices
 On operating systems, initiating a connection procedure will automatically run pairing if necessary. This process is entirely managed by the operating system, there isn't much that we can do from the user side.

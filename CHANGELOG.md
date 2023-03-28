@@ -4,12 +4,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 
 
-## [Unreleased]
+## [0.6.1] - 2023-03-28
 
 ### Added
 
 - Updated simpleble.pas with SimpleBleGetVersion().
 - Added output of SimpleBLE version to log on start.
+- Added checkbox in vsp terminal to select write command vs. write request (if exposed by peripheral).
 
 ### Changed
 
@@ -18,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 ### Fixed
 
 - Reduced flickering in VSP terminal when receiving large chunks of data.
-- Fixed bug when searching VSP which is also an assigned service (didn't show vsp terminal button).
+- Fixed bug when searching VSP service which is also an assigned service (didn't show vsp terminal button).
 
 ### Removed
 

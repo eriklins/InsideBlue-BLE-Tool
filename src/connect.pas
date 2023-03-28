@@ -72,7 +72,7 @@ type
 
   { Device data we need during an active device connection }
   TBleConnectData = record
-    ScnIdx: integer;
+    ScnIdx:           integer;
     PeripheralHandle: TSimpleBlePeripheral;
     DeviceName:       String;
     MacAddress:       String;
@@ -83,6 +83,8 @@ type
     IsConnected:      Boolean;
     IsPaired:         Boolean;
     HasVspService:    Boolean;
+    HasVspWriteCmd:   Boolean;
+    HasVspWriteReq:   Boolean;
     NotIndActiveCnt:  array of Integer;
     AttMtuSize:       Integer;
   end;
@@ -168,6 +170,7 @@ var
   Buffer: array of Byte;
   ChData: PByte;
   ChLen: NativeUInt;
+  FlagVspChar: Boolean;
 begin
   SetLength(Buffer, CharDescMaxLength);
   ChData := PByte(Buffer);
@@ -300,7 +303,6 @@ begin
         DeviceFormElements[i].LabelServiceUuid[SvIdx].Hint     := s;
       end;
       if BleConnectData[i].HasVspService then begin
-        UtilLog('HasVspService');
         DeviceFormElements[i].ButtonVspTerminal[SvIdx]         := TButton.Create(DeviceForm[i]);
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Parent  := DeviceFormElements[i].Panel[SvIdx];
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Tag     := (i shl TagPosDev) or (SvIdx shl TagPosSrv);
@@ -325,15 +327,18 @@ begin
         for ChIdx := 0 to BleConnectData[i].Services[SvIdx].CharacteristicCount-1 do begin
           SetLength(BleConnectData[i].Characteristic[SvIdx][ChIdx].data, CharDescMaxLength);
           SetString(s, BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid.Value, SIMPLEBLE_UUID_STR_LEN-1);
-          n := BleAssignedCharacteristicUuidToName(BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid);
+          n := BleVspCharacteristicUuidToName(BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid);
+          FlagVspChar := false;
           if n = '' then begin
-            n := BleVspCharacteristicUuidToName(BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid);
-            if n = '' then  // neither assigned service nor vsp service
+            n := BleAssignedCharacteristicUuidToName(BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].Uuid);
+            if n = '' then  // neither assigned characteristic nor vsp characteristic
               UtilLog('         CH: ' + s)
-            else  // vsp service
+            else  // assigned characteristic
               UtilLog('         CH: ' + s + ' (' + n + ')');
-          end else  // assigned service
+          end else begin // vsp characteristic
             UtilLog('         CH: ' + s + ' (' + n + ')');
+            FlagVspChar := true;
+          end;
 
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx]            := TLabel.Create(DeviceForm[i]);
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Parent     := DeviceFormElements[i].Panel[SvIdx];
@@ -411,6 +416,8 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].OnChange   := @DeviceForm[i].ButtonCharWriteCommand;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
             DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].OnEditingDone := @DeviceForm[i].CharEditingDone;
+            if FlagVspChar then
+              BleConnectData[i].HasVspWriteCmd := True;
           end;
           if BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].CanWriteRequest then begin
             DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].ReadOnly := false;
@@ -426,6 +433,8 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].OnChange   := @DeviceForm[i].ButtonCharWriteRequest;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
             DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].OnEditingDone := @DeviceForm[i].CharEditingDone;
+            if FlagVspChar then
+              BleConnectData[i].HasVspWriteReq := True;
           end;
           if BleConnectData[i].Services[SvIdx].Characteristics[ChIdx].CanNotify then begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify]            := TToggleBox.Create(DeviceForm[i]);
@@ -586,7 +595,13 @@ begin
 
   DeviceFormElements[DeIdx].Panel[SvIdx].Enabled := false;
 
-  UartTerminalStart(BleConnectData[DeIdx].PeripheralHandle, BleConnectData[DeIdx].DeviceName, BleConnectData[DeIdx].MacAddress, BleConnectData[DeIdx].Services[SvIdx].Uuid, DeviceFormElements[DeIdx].Panel[SvIdx]);
+  UartTerminalStart(BleConnectData[DeIdx].PeripheralHandle,
+                    BleConnectData[DeIdx].DeviceName,
+                    BleConnectData[DeIdx].MacAddress,
+                    BleConnectData[DeIdx].Services[SvIdx].Uuid,
+                    BleConnectData[DeIdx].HasVspWriteCmd,
+                    BleConnectData[DeIdx].HasVspWriteReq,
+                    DeviceFormElements[DeIdx].Panel[SvIdx]);
 end;
 
 
