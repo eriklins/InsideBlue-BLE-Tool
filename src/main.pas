@@ -444,13 +444,15 @@ begin
   UtilSetNextFormLeft(Self);
   LogOutput.Clear;
 
-  // initialize BLE units
+  // welcome log output
   UtilInit(Self.LogOutput);
   UtilLog('Welcome to InsideBlue BLE Tool V0.7');
   UtilLog('Copyright (C) 2023 Erik Lins');
   UtilLog('https://github.com/eriklins/InsideBlue-BLE-Tool');
   UtilLog('Uses SimpleBLE version ' + String(SimpleBleGetVersion()));
   UtilLog('');
+
+  // initialize BLE units
   BleInit;
   ScanInit;
   ConnectInit;
