@@ -110,6 +110,7 @@ const
 var
   ScanForm: TScanForm;
   PeripheralScanPanel: array of TPanelBleScanElements;
+  ScanFormWidth: Integer = 0;
 
 implementation
 
@@ -588,7 +589,10 @@ begin
     // increase scan form width to show log output
     ScanForm.Constraints.MaxWidth := 0;
     ScanForm.Constraints.MinWidth := ButtonClearLog.Left + ButtonClearLog.Width + ButtonCopyLog.Width + 2*ScanPanelPaddingHorizontal;
-    ScanForm.Width := ScrollBoxDevices.Left + ScrollBoxDevices.Width + 456 + ScanPanelPaddingHorizontal;
+    if ScanFormWidth = 0 then
+       ScanForm.Width := ScrollBoxDevices.Left + ScrollBoxDevices.Width + 456 + ScanPanelPaddingHorizontal
+    else
+       ScanForm.Width := ScanFormWidth;
     ScanForm.ButtonCopyLog.Left := ScanForm.Width - ScanForm.ButtonCopyLog.Width - ScanPanelPaddingHorizontal;
     ScanForm.ButtonCopyLog.Anchors := [akTop, akRight];
     UtilSetNextFormTop(ScanForm);
@@ -598,6 +602,7 @@ begin
     ScanForm.ButtonCopyLog.Anchors := [akTop, akLeft];
     ScanForm.Constraints.MaxWidth := ScrollBoxDevices.Left + ScrollBoxDevices.Width;
     ScanForm.Constraints.MinWidth := ScrollBoxDevices.Left + ScrollBoxDevices.Width;
+    ScanFormWidth := ScanForm.Width;  // remember width of form for later
     ScanForm.Width := ScrollBoxDevices.Left + ScrollBoxDevices.Width;
     UtilSetNextFormTop(ScanForm);
     UtilSetNextFormLeft(ScanForm);
