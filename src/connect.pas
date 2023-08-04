@@ -277,13 +277,13 @@ begin
       if n = '' then begin
         n := BleAssignedServiceUuidToName(BleConnectData[i].Services[SvIdx].Uuid);
         if n = '' then begin // neither assigned service nor vsp service
-          UtilLog('     SV1: ' + s);
+          UtilLog('     SV: ' + s);
         end else begin  // assigned service
-          UtilLog('     SV2: ' + s + ' (' + n + ')');
+          UtilLog('     SV: ' + s + ' (' + n + ')');
           BleConnectData[i].HasVspService := false;
         end;
       end else begin  // vsp service
-        UtilLog('     SV3: ' + s + ' (' + n + ')');
+        UtilLog('     SV: ' + s + ' (' + n + ')');
         BleConnectData[i].HasVspService := true;
       end;
 
