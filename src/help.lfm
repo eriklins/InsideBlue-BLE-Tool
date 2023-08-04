@@ -1,7 +1,7 @@
 object HelpForm: THelpForm
-  Left = 488
+  Left = 101
   Height = 480
-  Top = 888
+  Top = 697
   Width = 440
   Caption = 'InsideBlue BLE Tool - Help'
   ClientHeight = 480

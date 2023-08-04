@@ -1,7 +1,7 @@
 object DeviceForm: TDeviceForm
-  Left = 71
+  Left = 64
   Height = 320
-  Top = 671
+  Top = 313
   Width = 432
   Caption = 'Connect Device...'
   ClientHeight = 320
@@ -10,7 +10,7 @@ object DeviceForm: TDeviceForm
   Constraints.MinHeight = 320
   OnChangeBounds = FormChangeBounds
   OnCloseQuery = FormCloseQuery
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.99.0.0'
   object LabelMacAddress: TLabel
     Left = 8
     Height = 15

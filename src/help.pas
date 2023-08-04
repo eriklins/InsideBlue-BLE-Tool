@@ -45,7 +45,7 @@ function HelpInit(): Boolean;
 begin
 
   HelpFileExist := true;
-  HelpFilePath := '';
+  HelpFilePath := '';  // first look into local folder
   if not FileExists(HelpFilePath + 'help.rtf') then begin
     HelpFilePath := 'help\';  // this is relative path when started from within Lazarus IDE
     if not FileExists(HelpFilePath + 'help.rtf') then begin

@@ -23,7 +23,7 @@ uses
 
 begin
   RequireDerivedFormResource := True;
-  Application.Scaled := True;
+  Application.Scaled:=True;
   Application.Initialize;
 
   // check for dynamic library loading (Windows only)
