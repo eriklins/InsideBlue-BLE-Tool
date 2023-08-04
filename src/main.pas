@@ -447,7 +447,10 @@ begin
   // initialize BLE units
   UtilInit(Self.LogOutput);
   UtilLog('Welcome to InsideBlue BLE Tool V0.7');
-  UtilLog('Uses SimpleBLE version: ' + String(SimpleBleGetVersion()));
+  UtilLog('Copyright (C) 2023 Erik Lins');
+  UtilLog('https://github.com/eriklins/InsideBlue-BLE-Tool');
+  UtilLog('Uses SimpleBLE version ' + String(SimpleBleGetVersion()));
+  UtilLog('');
   BleInit;
   ScanInit;
   ConnectInit;

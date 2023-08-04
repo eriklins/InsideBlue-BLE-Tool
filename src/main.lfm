@@ -1,7 +1,7 @@
 object ScanForm: TScanForm
-  Left = 42
+  Left = 57
   Height = 840
-  Top = 60
+  Top = 53
   Width = 904
   Caption = 'InsideBlue BLE Tool V0.7'
   ClientHeight = 840
