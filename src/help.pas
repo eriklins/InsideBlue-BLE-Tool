@@ -26,6 +26,9 @@ type
   function HelpInit(): Boolean;
   procedure HelpShow(b: TButton);
 
+const
+  helpbuffer: array of Byte = ( 65, 66, 67, 68 );
+
 var
   HelpForm: THelpForm;
   HelpFileExist: Boolean;
@@ -47,7 +50,7 @@ begin
   HelpFileExist := true;
   HelpFilePath := '';
   if not FileExists(HelpFilePath + 'help.rtf') then begin
-    HelpFilePath := '..\..\help\';
+    HelpFilePath := 'help\';  // this is relative path when started from within Lazarus IDE
     if not FileExists(HelpFilePath + 'help.rtf') then begin
       UtilLog('Could not open help file.');
       HelpFileExist := false;
@@ -74,7 +77,14 @@ end;
 procedure THelpForm.FormCreate(Sender: TObject);
 var
   FS: TFileStream;
+  //TS: TStream;
 begin
+{  TS.Write(helpbuffer, Length(helpbuffer));
+  try
+    RichMemoHelp.LoadRichText(TS);
+  finally
+    TS.Free;
+  end;}
   if HelpFileExist then begin
     FS := TFileStream.Create(HelpFilePath + 'help.rtf', fmOpenRead or fmShareDenyNone);
     try

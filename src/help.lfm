@@ -9,7 +9,7 @@ object HelpForm: THelpForm
   Color = clWhite
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.99.0.0'
   object RichMemoHelp: TRichMemo
     Left = 8
     Height = 480

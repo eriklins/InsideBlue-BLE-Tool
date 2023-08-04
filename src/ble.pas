@@ -46,7 +46,7 @@ const
 
   VspCharacteristicUuids: array of TVspCharacteristicUuids = (  // proprietary ble uart characteristics
 
-  // Laird Connectivity VSP Service
+    // Laird Connectivity VSP Service
     (Uuid: (Value: '569a2001-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp Rx'),        // 0
     (Uuid: (Value: '569a2000-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp Tx'),        // 1
     (Uuid: (Value: '569a2003-b87f-490c-92cb-11ba5ea5167c'); Name: 'Laird Vsp ModemIn'),   // 2

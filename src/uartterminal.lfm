@@ -1,7 +1,7 @@
 object TerminalForm: TTerminalForm
-  Left = 35
+  Left = 118
   Height = 560
-  Top = 500
+  Top = 766
   Width = 800
   VertScrollBar.Visible = False
   Caption = 'InsideBlue - Virtual Serial Port Terminal'
@@ -11,7 +11,7 @@ object TerminalForm: TTerminalForm
   Constraints.MinWidth = 800
   OnChangeBounds = FormChangeBounds
   OnClose = FormClose
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.99.0.0'
   object TextBoxDeviceName: TEdit
     Left = 8
     Height = 28

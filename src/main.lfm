@@ -3,7 +3,7 @@ object ScanForm: TScanForm
   Height = 840
   Top = 50
   Width = 904
-  Caption = 'InsideBlue BLE Tool V0.6.1'
+  Caption = 'InsideBlue BLE Tool V0.7'
   ClientHeight = 840
   ClientWidth = 904
   Color = clWhite
@@ -4342,7 +4342,7 @@ object ScanForm: TScanForm
   OnChangeBounds = FormChangeBounds
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.99.0.0'
   object ButtonStartScan: TButton
     Left = 8
     Height = 31
@@ -4367,10 +4367,10 @@ object ScanForm: TScanForm
     TabOrder = 1
   end
   object LabelNofDevices: TLabel
-    Left = 16
+    Left = 8
     Height = 23
     Top = 96
-    Width = 424
+    Width = 416
     HelpType = htKeyword
     Alignment = taCenter
     AutoSize = False
