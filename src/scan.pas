@@ -77,7 +77,7 @@ procedure AdapterOnScanFoundUpdated(Adapter: TSimplebleAdapter; Peripheral: TSim
 var
   AdapterIdentifier: PChar;
   PeripheralAddress: PChar;
-  DevIdx, j: Integer;
+  DevIdx, j, k: Integer;
   FlagNewData: Boolean;
   s: String;
   TmpManufacturerData: TSimpleBleManufacturerData;
@@ -164,21 +164,24 @@ begin
 
   // check if we got manufacturer specific data
   if SimpleBlePeripheralManufacturerDataCount(Peripheral) > 0 then begin
-    SimpleBlePeripheralManufacturerDataGet(Peripheral, 0, TmpManufacturerData);  // store manuf data temporarily
-    j := 0;
-    FlagNewData := true;
-    while j < BleScanData[DevIdx].ManufacturerDataCount do begin
-      if BleScanData[DevIdx].ManufacturerData[j].ManufacturerId = TmpManufacturerData.ManufacturerId then begin
-        FlagNewData := false;
-        break;
+
+    for k := 0 to SimpleBlePeripheralManufacturerDataCount(Peripheral) do begin
+      SimpleBlePeripheralManufacturerDataGet(Peripheral, k, TmpManufacturerData);  // store manuf data temporarily
+      j := 0;
+      FlagNewData := true;
+      while j < BleScanData[DevIdx].ManufacturerDataCount do begin
+        if BleScanData[DevIdx].ManufacturerData[j].ManufacturerId = TmpManufacturerData.ManufacturerId then begin
+          FlagNewData := false;
+          break;
+        end;
+        Inc(j);
       end;
-      Inc(j);
+      if FlagNewData then begin
+        SetLength(BleScanData[DevIdx].ManufacturerData, j + 1);
+        BleScanData[DevIdx].ManufacturerDataCount := j + 1;
+      end;
+      SimpleBlePeripheralManufacturerDataGet(Peripheral, k, BleScanData[DevIdx].ManufacturerData[j]);
     end;
-    if FlagNewData then begin
-      SetLength(BleScanData[DevIdx].ManufacturerData, j + 1);
-      BleScanData[DevIdx].ManufacturerDataCount := j + 1;
-    end;
-    SimpleBlePeripheralManufacturerDataGet(Peripheral, 0, BleScanData[DevIdx].ManufacturerData[j]);
     for j := 0 to BleScanData[DevIdx].ManufacturerDataCount-1 do begin
       UtilLog('     MD: ' + IntToHex(BleScanData[DevIdx].ManufacturerData[j].ManufacturerId, 4) + ':' + UtilDataToHex(BleScanData[DevIdx].ManufacturerData[j].Data, BleScanData[DevIdx].ManufacturerData[j].DataLength));
     end;
