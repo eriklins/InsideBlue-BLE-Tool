@@ -3,6 +3,23 @@ This changelog document (CHANGELOG.md) is a summary of all notable changes to th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses the Markdown formatting syntax. You can find the original example and template [here](https://github.com/olivierlacan/keep-a-changelog/blob/main/CHANGELOG.md).
 
 
+## [0.7] - 2023-08-10
+
+### Added
+
+- Added BT style application icon and form window icon instead of default Lazarus one.
+
+### Changed
+
+- Welcome message.
+- Updated BT assigned numbers list.
+- Updated underlying SimpleBLE library to 0.6.2
+
+### Fixed
+
+- Fixed issue with scanning not catching all manufaturer specific data fields in advert payload.
+- Fixed restore of main form window when has been resized before.
+
 
 ## [0.6.1] - 2023-03-28
 
