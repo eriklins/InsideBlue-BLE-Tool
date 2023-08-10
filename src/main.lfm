@@ -1,7 +1,7 @@
 object ScanForm: TScanForm
-  Left = 762
+  Left = 193
   Height = 840
-  Top = 98
+  Top = 72
   Width = 904
   Caption = 'InsideBlue BLE Tool V0.7'
   ClientHeight = 840
@@ -2167,7 +2167,7 @@ object ScanForm: TScanForm
   end
   object EditFilterDeviceName: TEdit
     Left = 192
-    Height = 34
+    Height = 23
     Top = 64
     Width = 88
     OnEditingDone = EditFilterDeviceNameEditingDone
@@ -2175,7 +2175,7 @@ object ScanForm: TScanForm
   end
   object EditFilterMacAddress: TEdit
     Left = 288
-    Height = 34
+    Height = 23
     Top = 64
     Width = 88
     OnEditingDone = EditFilterMacAddressEditingDone
@@ -2183,7 +2183,7 @@ object ScanForm: TScanForm
   end
   object EditFilterRssi: TEdit
     Left = 384
-    Height = 34
+    Height = 23
     Top = 64
     Width = 40
     NumbersOnly = True
@@ -2192,30 +2192,30 @@ object ScanForm: TScanForm
   end
   object LabelFilterDeviceName: TLabel
     Left = 192
-    Height = 17
+    Height = 15
     Top = 48
-    Width = 87
+    Width = 70
     Caption = 'Device Name'
   end
   object LabelFilterMacAddress: TLabel
     Left = 288
-    Height = 17
+    Height = 15
     Top = 48
-    Width = 87
+    Width = 68
     Caption = 'Mac Address'
   end
   object LabelFilterRssi: TLabel
     Left = 384
-    Height = 17
+    Height = 15
     Top = 48
-    Width = 27
+    Width = 20
     Caption = 'Rssi'
   end
   object LabelFilter: TLabel
     Left = 192
-    Height = 17
+    Height = 15
     Top = 32
-    Width = 129
+    Width = 100
     Caption = 'Filter Devices by...'
     Font.Style = [fsBold]
     ParentFont = False
@@ -2250,9 +2250,9 @@ object ScanForm: TScanForm
   end
   object CheckBoxShowLog: TCheckBox
     Left = 8
-    Height = 23
+    Height = 19
     Top = 72
-    Width = 139
+    Width = 111
     Caption = 'Show Log Output'
     OnChange = CheckBoxShowLogChange
     TabOrder = 7
@@ -2267,7 +2267,7 @@ object ScanForm: TScanForm
     TabOrder = 8
   end
   object ButtonCopyLog: TButton
-    Left = 757
+    Left = 750
     Height = 25
     Top = 0
     Width = 146
@@ -2277,9 +2277,9 @@ object ScanForm: TScanForm
   end
   object LabelHeader: TLabel
     Left = 8
-    Height = 24
+    Height = 30
     Top = -5
-    Width = 198
+    Width = 191
     Caption = 'InsideBlue BLE Tool'
     Font.CharSet = ANSI_CHARSET
     Font.Color = 13402176
