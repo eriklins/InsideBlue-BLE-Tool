@@ -87,6 +87,7 @@ type
     HasVspWriteReq:   Boolean;
     NotIndActiveCnt:  array of Integer;
     AttMtuSize:       Integer;
+    RestoreButton:    TButton;
   end;
 
 const
@@ -113,7 +114,6 @@ var
   BleConnectData: array of TBleConnectData;
   DeviceForm: array of TDeviceForm;
   DeviceFormElements: array of TDeviceFormElements;
-  RestoreFormElement: TButton;
   SuppressUnsubscribe: Boolean;
 
 { initialize connect unit }
@@ -186,7 +186,7 @@ begin
   BleConnectData[i].DeviceName       := DevName;
   BleConnectData[i].MacAddress       := MacAddr;
   BleConnectData[i].PeripheralHandle := PerHandle;
-  RestoreFormElement := restore;  // this points to the connect button on the scan form we need to re-enable after disconnect
+  BleConnectData[i].RestoreButton    := restore;  // this points to the connect button on the scan form we need to re-enable after disconnect
 
   // register on disconnect callback function
   SimpleBlePeripheralSetCallbackOnDisconnected(BleConnectData[i].PeripheralHandle, @DeviceOnDisconnect, Nil);
@@ -562,14 +562,19 @@ end;
 { close device form and also disconnect from device }
 procedure TDeviceForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
-  idx: Integer;
+  idx, i: Integer;
 begin
   idx := TForm(Sender).Tag;
 
   DisconnectDevice(idx);
-  RestoreFormElement.Enabled := true;
+  BleConnectData[idx].RestoreButton.Enabled := true;
   UtilSetNextFormLeft(DeviceForm[idx], true);
-  Delete(BleConnectData, idx, 1);
+  for i := Length(BleConnectData)-1 downto 0 do begin
+    if BleConnectData[i].IsConnected = false then
+      Delete(BleConnectData, i, 1)
+    else
+      break;
+  end;
 end;
 
 

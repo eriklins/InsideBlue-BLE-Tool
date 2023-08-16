@@ -3,6 +3,21 @@ This changelog document (CHANGELOG.md) is a summary of all notable changes to th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses the Markdown formatting syntax. You can find the original example and template [here](https://github.com/olivierlacan/keep-a-changelog/blob/main/CHANGELOG.md).
 
 
+## [0.7.1] - 2023-08-16
+
+### Added
+
+- None.
+
+### Changed
+
+- Improved garbage collection of device form data after disconnect.
+
+### Fixed
+
+- Restore of "Connect" button in scan window when connected to multiple devices.
+
+
 ## [0.7] - 2023-08-10
 
 ### Added
