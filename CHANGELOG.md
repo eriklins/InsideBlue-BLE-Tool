@@ -3,6 +3,22 @@ This changelog document (CHANGELOG.md) is a summary of all notable changes to th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses the Markdown formatting syntax. You can find the original example and template [here](https://github.com/olivierlacan/keep-a-changelog/blob/main/CHANGELOG.md).
 
 
+## [0.7.2] - 2023-08-23
+
+### Added
+
+- Setting of ModemIn characteristic when starting VSP terminal.
+- Handling of ModemOut characteristic notifications and enabling/disabling of Send button accordingly.
+
+### Changed
+
+- None.
+
+### Fixed
+
+- Typo in UartTerminalStart() with ModemIn/Out variable names.
+
+
 ## [0.7.1] - 2023-08-16
 
 ### Added
