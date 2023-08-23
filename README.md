@@ -1,4 +1,4 @@
-# InsideBlue BLE Tool V0.7.1
+# InsideBlue BLE Tool V0.7.2
 Welcome to **InsideBlue BLE Tool**, an easy to use Windows BLE application for Bluetooth Low-Energy (BLE) connectivity leveraging the PC’s integrated Bluetooth adapter. It's actually cross-platform, see below for Linux and Max OS support.
 
 You can scan for BLE devices that are advertising and discover their GAP services or manufacturer specific data, engage a connection and access the peripheral GATT table.
@@ -61,7 +61,7 @@ For known VSP services you can open a terminal window and send/receive text. Lin
 You can set line endings for send (`<cr>` and/or `<lf>` will be appended to the send string) and receive (new line will be added to the receive window on `<cr>`, `<lf>` or closing curly bracket of e.g., a JSON string).
 
 ### Modem In/Out Characteristics
-Beside the mandatory TX (from peripheral to central) and RX (from central to peripheral) characteristics, some VSP services offer additional Modem In/Out characteristics which are used for handshake signalling much like RTS/CTS signals on a real UART. (These are not yet implemented in InsideBlue.)
+Beside the mandatory TX (from peripheral to central) and RX (from central to peripheral) characteristics, some VSP services offer additional Modem In/Out characteristics which are used for handshake signalling much like RTS/CTS signals on a real UART.
 
 ### Length of RX Characteristic
 The length of the peripheral RX characteristic is not known to the central, hence when sending text lines with too many characters, the BLE write operation will fail. By default the characteristic length is set to the used MTU size -3, which is a known good guess.
