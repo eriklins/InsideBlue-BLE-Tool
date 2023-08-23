@@ -225,10 +225,22 @@ begin
 end;
 
 
-{ Callback function on notification from tx characteristic }
+{ Callback function on notification from modem out characteristic }
 procedure UartModemOutOnNotify(SvUuid: TSimpleBleUuid; ChUuid: TSimpleBleUuid; Data: PByte; Len: NativeUInt; UserData: PPointer);
 begin
-  UtilLog('Received ModemOut notification.');
+  // disable send button if Modem Out = 0
+  if(Data[0] = Byte($00)) then begin
+    UtilLog('Received ModemOut notification: STOP.');
+    TerminalForm[0].ButtonSend.Caption := 'Stopped...';
+    TerminalForm[0].ButtonSend.Enabled := false;
+  // enable send button if Modem Out = 1
+  end else if(Data[0] = Byte($01)) then begin
+    UtilLog('Received ModemOut notification: CLEAR.');
+    TerminalForm[0].ButtonSend.Caption := 'Send';
+    TerminalForm[0].ButtonSend.Enabled := true;
+  end else begin
+    UtilLog('Received undefined ModemOut notification: ' + IntToStr(Data[0]));
+  end;
 end;
 
 
@@ -236,7 +248,13 @@ end;
 procedure UartTerminalStart(PerHandle: TSimpleBlePeripheral; DevName: string; MacAddr: string; SvUuid: TSimpleBleUuid; HasWrCmd: Boolean; HasWrReq: Boolean; restore: TPanel);
 var
   i, j: Integer;
+  Buffer: array of Byte;
+  ChData: PByte;
+  ChLen: NativeUInt;
 begin
+
+  SetLength(Buffer, CharDescMaxLength);
+  ChData := PByte(Buffer);
 
   // need to limit to one terminal due to missing support in SimpleBle library
   if Length(VspTerminal) = 1 then begin
@@ -269,7 +287,7 @@ begin
           VspTerminal[i].HasModemIn := false
         else begin
           VspTerminal[i].HasModemIn := True;
-          VspTerminal[i].UuidModemIn  := VspCharacteristicUuids[VspServiceUuids[j].ChModemOut].Uuid;
+          VspTerminal[i].UuidModemIn  := VspCharacteristicUuids[VspServiceUuids[j].ChModemIn].Uuid;
         end;
         if VspServiceUuids[j].ChModemOut < 0 then  // modem characteristics are optional
           VspTerminal[i].HasModemOut := false
@@ -327,13 +345,32 @@ begin
       UtilLog('Subscribed to UART ModemOut characteristic');
   end;
 
+  // set position for next form
   UtilSetNextFormTop(TerminalForm[i]);
   UtilSetNextFormLeft(TerminalForm[i]);
 
-  TerminalForm[0].ComboBoxSendLine.Items.Clear;
-  TerminalForm[0].ComboBoxSendLine.Items.Add('');
+  // clear send line and memobox
+  TerminalForm[i].ComboBoxSendLine.Items.Clear;
+  TerminalForm[i].ComboBoxSendLine.Items.Add('');
+  TerminalForm[i].MemoReceiveData.Clear;
 
-  TerminalForm[0].MemoReceiveData.Clear;
+  // signal CTS over ModemIn characteristic if available
+  if VspTerminal[i].HasModemIn then begin
+    Buffer[0] := Byte($01);
+    ChLen := 1;
+    if VspTerminal[i].HasVspWriteReq then begin
+      if SimpleBlePeripheralWriteRequest(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidModemIn, ChData, ChLen) = SIMPLEBLE_FAILURE then begin
+        ShowMessage('Failed to signal ModemIn CTS with WR request.');
+        UtilLog('Failed to signal ModemIn CTS with WR request.');
+      end;
+    end else if VspTerminal[i].HasVspWriteCmd then begin
+      if SimpleBlePeripheralWriteCommand(VspTerminal[i].Handle, VspTerminal[i].UuidService, VspTerminal[i].UuidModemIn, ChData, ChLen) = SIMPLEBLE_FAILURE then begin
+        ShowMessage('Failed to signal ModemIn CTS with WR command.');
+        UtilLog('Failed to signal ModemIn CTS with WR command.');
+      end;
+    end;
+  end;
+
 end;
 
 

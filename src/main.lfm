@@ -3,7 +3,7 @@ object ScanForm: TScanForm
   Height = 840
   Top = 72
   Width = 904
-  Caption = 'InsideBlue BLE Tool V0.7.1'
+  Caption = 'InsideBlue BLE Tool V0.7.2'
   ClientHeight = 840
   ClientWidth = 904
   Color = clWhite
