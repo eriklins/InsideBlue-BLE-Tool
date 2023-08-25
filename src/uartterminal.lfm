@@ -1,7 +1,7 @@
 object TerminalForm: TTerminalForm
-  Left = 118
+  Left = 79
   Height = 560
-  Top = 766
+  Top = 325
   Width = 800
   VertScrollBar.Visible = False
   Caption = 'InsideBlue - Virtual Serial Port Terminal'

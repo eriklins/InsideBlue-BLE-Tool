@@ -311,7 +311,7 @@ begin
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Left      := PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Left;
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].LabelServices.Width - (3*ScanPanelPaddingHorizontal);
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].AutoSize  := false;
-                PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Height    := 20;
+                //PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Height    := 20;
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Color     := clForm;
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Font.Size := 10;
                 PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Top + PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Height + 2*ScanPanelPaddingVertical;
@@ -377,11 +377,11 @@ begin
             PeripheralScanPanel[DevIdx].TextBoxManufData[i]           := TEdit.Create(ScanForm);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].ReadOnly  := True;
-            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top       := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - 3*ScanPanelPaddingVertical + PeripheralScanPanel[DevIdx].LabelManufDataId[i].Height;
+            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top       := PeripheralScanPanel[DevIdx].LabelManufDataId[i].top + PeripheralScanPanel[DevIdx].LabelManufDataId[i].Height;// - 3*ScanPanelPaddingVertical;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Left      := ScanPanelPaddingHorizontal;
-            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - (2*ScanPanelPaddingHorizontal);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].AutoSize  := false;
-            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Height    := 20;
+            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - (2*ScanPanelPaddingHorizontal);
+            //PeripheralScanPanel[DevIdx].TextBoxManufData[i].Height    := 20;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Color     := clForm;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Font.Size := 10;
             PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top + PeripheralScanPanel[DevIdx].TextBoxManufData[i].Height + 2*ScanPanelPaddingVertical;

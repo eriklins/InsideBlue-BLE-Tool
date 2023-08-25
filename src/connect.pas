@@ -365,7 +365,7 @@ begin
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Font.Size := 10;
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].AutoSize  := false;
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Width     := 248;
-          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Height    := 20;
+          //DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Height    := 20;
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Color     := clForm;
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].ReadOnly  := true;
           NextElementVertical := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top + DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Height + DeviceFormPaddingVertical div 2;
@@ -502,7 +502,7 @@ begin
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].MaxLength := 4;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].AutoSize  := false;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Width     := 56;
-              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height    := 20;
+              //DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height    := 20;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Color     := clForm;
               NextElementVertical := DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Top + DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height + DeviceFormPaddingVertical div 2;
 
