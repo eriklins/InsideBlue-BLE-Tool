@@ -445,7 +445,7 @@ begin
 
   // welcome log output
   UtilInit(Self.LogOutput);
-  UtilLog('Welcome to InsideBlue BLE Tool V0.7.3');
+  UtilLog('Welcome to InsideBlue BLE Tool V0.8');
   UtilLog('Copyright (C) 2023 Erik Lins');
   UtilLog('https://github.com/eriklins/InsideBlue-BLE-Tool');
   UtilLog('Uses SimpleBLE version ' + String(SimpleBleGetVersion()));

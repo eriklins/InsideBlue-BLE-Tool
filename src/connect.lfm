@@ -41,7 +41,6 @@ object DeviceForm: TDeviceForm
     VertScrollBar.Increment = 32
     VertScrollBar.Page = 1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    AutoSize = True
     Color = clMenu
     ParentBackground = False
     ParentColor = False

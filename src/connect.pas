@@ -303,14 +303,14 @@ begin
         DeviceFormElements[i].LabelServiceUuid[SvIdx].Hint     := s;
       end;
       if BleConnectData[i].HasVspService then begin
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx]         := TButton.Create(DeviceForm[i]);
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Parent  := DeviceFormElements[i].Panel[SvIdx];
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Tag     := (i shl TagPosDev) or (SvIdx shl TagPosSrv);
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Caption := 'VSP Terminal';
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Top     := DeviceFormElements[i].LabelServiceUuid[SvIdx].Top;
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Left    := DeviceFormElements[i].Panel[SvIdx].Width - DeviceFormElements[i].ButtonVspTerminal[SvIdx].Width - DeviceFormPaddingHorizontal;
-        //DeviceFormElements[i].ButtonVspTerminal[SvIdx].Width   := 64;
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].OnClick := @DeviceForm[i].ButtonVspTerminalClick;
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx]          := TButton.Create(DeviceForm[i]);
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Parent   := DeviceFormElements[i].Panel[SvIdx];
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Tag      := (i shl TagPosDev) or (SvIdx shl TagPosSrv);
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Caption  := 'VSP Terminal';
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].AutoSize := true;
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Top      := DeviceFormElements[i].LabelServiceUuid[SvIdx].Top;
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Left     := DeviceFormElements[i].Panel[SvIdx].Width - DeviceFormElements[i].ButtonVspTerminal[SvIdx].Width - DeviceFormPaddingHorizontal;
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].OnClick  := @DeviceForm[i].ButtonVspTerminalClick;
       end;
       NextElementVertical := DeviceFormElements[i].LabelServiceUuid[SvIdx].Top + DeviceFormElements[i].LabelServiceUuid[SvIdx].Height + DeviceFormPaddingVertical;
 
@@ -480,7 +480,6 @@ begin
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Caption    := 'LabelDescriptorUuid';
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Width      := Round(DeviceFormElements[i].Panel[SvIdx].Width * 2 / 3);
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].AutoSize   := false;
-              //DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Height     := 18;
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Font.Size  := 10;
               if n = '' then
                 DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Caption  := UpperCase(s)
@@ -493,15 +492,15 @@ begin
 
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx]           := TEdit.Create(DeviceForm[i]);
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Parent    := DeviceFormElements[i].Panel[SvIdx];
+              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].ReadOnly  := true;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Top       := NextElementVertical;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Left      := 5*DeviceFormPaddingHorizontal;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Caption   := 'TextBoxDescriptor';
+              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].AutoSize  := false;
+              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Width     := 56;
+              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Color     := clForm;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Font.Size := 10;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].MaxLength := 4;
-              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Width     := 56;
-              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].AutoSize  := false;
-              //DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height    := 20;
-              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Color     := clForm;
               NextElementVertical := DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Top + DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height + DeviceFormPaddingVertical div 2;
 
               // read descriptor value, store in device data record and display in text box

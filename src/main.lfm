@@ -3,9 +3,9 @@ object ScanForm: TScanForm
   Height = 690
   Top = 87
   Width = 905
-  Caption = 'InsideBlue BLE Tool V0.7.3'
-  ClientHeight = 0
-  ClientWidth = 0
+  Caption = 'InsideBlue BLE Tool V0.8'
+  ClientHeight = 690
+  ClientWidth = 905
   Color = clWhite
   Constraints.MinHeight = 320
   Icon.Data = {
