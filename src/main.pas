@@ -309,9 +309,9 @@ begin
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].ReadOnly  := True;
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Top       := PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Top + PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Height;// + ScanPanelPaddingVertical;
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Left      := PeripheralScanPanel[DevIdx].LabelServiceUuid[i].Left;
-                PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].LabelServices.Width - (3*ScanPanelPaddingHorizontal);
+                PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Caption   := 'TextBoxServiceData';
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].AutoSize  := false;
-                //PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Height    := 20;
+                PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].LabelServices.Width - (3*ScanPanelPaddingHorizontal);
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Color     := clForm;
                 PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Font.Size := 10;
                 PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Top + PeripheralScanPanel[DevIdx].TextBoxServiceData[i].Height + 2*ScanPanelPaddingVertical;
@@ -357,12 +357,11 @@ begin
             // label for the company name
             PeripheralScanPanel[DevIdx].LabelManufDataId[i]           := TLabel.Create(ScanForm);
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
-            //PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption   := 'Company name or id';
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Top       := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height - 2*ScanPanelPaddingVertical;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Left      := ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Caption   := 'LabelManufDataId';
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].AutoSize  := false;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - PeripheralScanPanel[DevIdx].CheckBoxManufHexAscii[i].Width - 4*ScanPanelPaddingHorizontal;
-            PeripheralScanPanel[DevIdx].LabelManufDataId[i].Height    := 20;
             PeripheralScanPanel[DevIdx].LabelManufDataId[i].Font.Size := 10;
             // check if company id is assigned company name
             n := BleAssignedCompanyIdToName(LowerCase(IntToHex(BleScanData[DevIdx].ManufacturerData[i].ManufacturerId, 4)));
@@ -377,11 +376,11 @@ begin
             PeripheralScanPanel[DevIdx].TextBoxManufData[i]           := TEdit.Create(ScanForm);
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Parent    := PeripheralScanPanel[DevIdx].PanelDeviceInfo;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].ReadOnly  := True;
-            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top       := PeripheralScanPanel[DevIdx].LabelManufDataId[i].top + PeripheralScanPanel[DevIdx].LabelManufDataId[i].Height;// - 3*ScanPanelPaddingVertical;
+            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top       := PeripheralScanPanel[DevIdx].LabelManufDataId[i].Top + PeripheralScanPanel[DevIdx].LabelManufDataId[i].Height + ScanPanelPaddingVertical;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Left      := ScanPanelPaddingHorizontal;
+            PeripheralScanPanel[DevIdx].TextBoxManufData[i].Caption   := 'TextBoxManufData';
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].AutoSize  := false;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Width     := PeripheralScanPanel[DevIdx].PanelDeviceInfo.Width - (2*ScanPanelPaddingHorizontal);
-            //PeripheralScanPanel[DevIdx].TextBoxManufData[i].Height    := 20;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Color     := clForm;
             PeripheralScanPanel[DevIdx].TextBoxManufData[i].Font.Size := 10;
             PeripheralScanPanel[DevIdx].PanelDeviceInfo.Height := PeripheralScanPanel[DevIdx].TextBoxManufData[i].Top + PeripheralScanPanel[DevIdx].TextBoxManufData[i].Height + 2*ScanPanelPaddingVertical;
@@ -446,7 +445,7 @@ begin
 
   // welcome log output
   UtilInit(Self.LogOutput);
-  UtilLog('Welcome to InsideBlue BLE Tool V0.7.2');
+  UtilLog('Welcome to InsideBlue BLE Tool V0.7.3');
   UtilLog('Copyright (C) 2023 Erik Lins');
   UtilLog('https://github.com/eriklins/InsideBlue-BLE-Tool');
   UtilLog('Uses SimpleBLE version ' + String(SimpleBleGetVersion()));

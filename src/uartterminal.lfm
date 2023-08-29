@@ -1,12 +1,12 @@
 object TerminalForm: TTerminalForm
-  Left = 79
+  Left = 199
   Height = 560
-  Top = 325
-  Width = 800
+  Top = 683
+  Width = 801
   VertScrollBar.Visible = False
   Caption = 'InsideBlue - Virtual Serial Port Terminal'
   ClientHeight = 560
-  ClientWidth = 800
+  ClientWidth = 801
   Constraints.MinHeight = 320
   Constraints.MinWidth = 800
   OnChangeBounds = FormChangeBounds
@@ -34,7 +34,7 @@ object TerminalForm: TTerminalForm
     ParentFont = False
   end
   object ButtonSend: TButton
-    Left = 688
+    Left = 689
     Height = 24
     Top = 64
     Width = 104
@@ -74,7 +74,7 @@ object TerminalForm: TTerminalForm
     Left = 8
     Height = 25
     Top = 64
-    Width = 664
+    Width = 665
     Anchors = [akTop, akLeft, akRight]
     Font.CharSet = ANSI_CHARSET
     Font.Height = -13
@@ -89,7 +89,7 @@ object TerminalForm: TTerminalForm
     Left = 8
     Height = 457
     Top = 96
-    Width = 784
+    Width = 785
     Anchors = [akTop, akLeft, akRight, akBottom]
     Font.CharSet = ANSI_CHARSET
     Font.Height = -13
@@ -133,7 +133,7 @@ object TerminalForm: TTerminalForm
     TabOrder = 2
   end
   object LabelHeader: TLabel
-    Left = 528
+    Left = 529
     Height = 30
     Top = 4
     Width = 265
@@ -149,7 +149,7 @@ object TerminalForm: TTerminalForm
     ParentFont = False
   end
   object TextBoxCharLen: TEdit
-    Left = 624
+    Left = 625
     Height = 20
     Top = 39
     Width = 48
@@ -161,7 +161,7 @@ object TerminalForm: TTerminalForm
     Text = 'TextBoxCharLen'
   end
   object LabelCharLength: TLabel
-    Left = 488
+    Left = 489
     Height = 19
     Top = 40
     Width = 136
@@ -179,7 +179,7 @@ object TerminalForm: TTerminalForm
     TabOrder = 9
   end
   object CheckBoxUseWriteReq: TCheckBox
-    Left = 690
+    Left = 691
     Height = 19
     Top = 40
     Width = 103

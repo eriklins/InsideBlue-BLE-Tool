@@ -3,7 +3,7 @@ This changelog document (CHANGELOG.md) is a summary of all notable changes to th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and uses the Markdown formatting syntax. You can find the original example and template [here](https://github.com/olivierlacan/keep-a-changelog/blob/main/CHANGELOG.md).
 
 
-## [0.7.3] - 2023-08-25
+## [0.8] - 2023-08-29
 
 ### Added
 

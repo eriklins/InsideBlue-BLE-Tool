@@ -306,17 +306,17 @@ begin
         DeviceFormElements[i].ButtonVspTerminal[SvIdx]         := TButton.Create(DeviceForm[i]);
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Parent  := DeviceFormElements[i].Panel[SvIdx];
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Tag     := (i shl TagPosDev) or (SvIdx shl TagPosSrv);
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Caption := 'VSP Terminal';
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].Top     := DeviceFormElements[i].LabelServiceUuid[SvIdx].Top;
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Left    := DeviceFormElements[i].Panel[SvIdx].Width - 64 - DeviceFormPaddingHorizontal;
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Width   := 64;
-        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Caption := 'Terminal';
+        DeviceFormElements[i].ButtonVspTerminal[SvIdx].Left    := DeviceFormElements[i].Panel[SvIdx].Width - DeviceFormElements[i].ButtonVspTerminal[SvIdx].Width - DeviceFormPaddingHorizontal;
+        //DeviceFormElements[i].ButtonVspTerminal[SvIdx].Width   := 64;
         DeviceFormElements[i].ButtonVspTerminal[SvIdx].OnClick := @DeviceForm[i].ButtonVspTerminalClick;
       end;
-      NextElementVertical := DeviceFormElements[i].LabelServiceUuid[SvIdx].Top + DeviceFormElements[i].LabelServiceUuid[SvIdx].Height + DeviceFormPaddingVertical div 2;
+      NextElementVertical := DeviceFormElements[i].LabelServiceUuid[SvIdx].Top + DeviceFormElements[i].LabelServiceUuid[SvIdx].Height + DeviceFormPaddingVertical;
 
       if BleConnectData[i].Services[SvIdx].CharacteristicCount > 0 then begin
-        SetLength(BleConnectData[i].Characteristic[SvIdx],             BleConnectData[i].Services[SvIdx].CharacteristicCount);
-        SetLength(BleConnectData[i].Descriptor[SvIdx],                 BleConnectData[i].Services[SvIdx].CharacteristicCount);
+        SetLength(BleConnectData[i].Characteristic[SvIdx],              BleConnectData[i].Services[SvIdx].CharacteristicCount);
+        SetLength(BleConnectData[i].Descriptor[SvIdx],                  BleConnectData[i].Services[SvIdx].CharacteristicCount);
         SetLength(DeviceFormElements[i].LabelCharacteristicUuid[SvIdx], BleConnectData[i].Services[SvIdx].CharacteristicCount);
         SetLength(DeviceFormElements[i].LabelDescriptorUuid[SvIdx],     BleConnectData[i].Services[SvIdx].CharacteristicCount);
         SetLength(DeviceFormElements[i].TextBoxCharacteristic[SvIdx],   BleConnectData[i].Services[SvIdx].CharacteristicCount);
@@ -344,10 +344,11 @@ begin
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Parent     := DeviceFormElements[i].Panel[SvIdx];
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Top        := NextElementVertical;
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Left       := 3*DeviceFormPaddingHorizontal;
-          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].AutoSize   := false;
-          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Width      := 248;
-          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Height     := 18;
           DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Font.Size  := 10;
+          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Caption    := ' ';
+          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].AutoSize   := false;
+          DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Width      := Round(DeviceFormElements[i].Panel[SvIdx].Width * 2 / 3);
+          //DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Height     := 18;
           if n = '' then
             DeviceFormElements[i].LabelCharacteristicUuid[SvIdx][ChIdx].Caption  := UpperCase(s)
           else begin
@@ -359,16 +360,16 @@ begin
 
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx]           := TEdit.Create(DeviceForm[i]);
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Parent    := DeviceFormElements[i].Panel[SvIdx];
+          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].ReadOnly  := true;
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Tag       := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top       := NextElementVertical;
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Left      := 3*DeviceFormPaddingHorizontal;
-          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Font.Size := 10;
+          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Caption   := ' ';
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].AutoSize  := false;
-          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Width     := 248;
-          //DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Height    := 20;
+          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Width     := Round(DeviceFormElements[i].Panel[SvIdx].Width * 2 / 3);
           DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Color     := clForm;
-          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].ReadOnly  := true;
-          NextElementVertical := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top + DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Height + DeviceFormPaddingVertical div 2;
+          DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Font.Size := 10;
+          NextElementVertical := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top + DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Height + DeviceFormPaddingVertical;
 
           DeviceFormElements[i].CheckBoxHexAscii[SvIdx][ChIdx]         := TCheckBox.Create(DeviceForm[i]);
           DeviceFormElements[i].CheckBoxHexAscii[SvIdx][ChIdx].Parent  := DeviceFormElements[i].Panel[SvIdx];
@@ -386,10 +387,9 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Font.Size  := 8;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].Caption    := 'RD';
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].AutoSize   := true;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanRead].OnChange   := @DeviceForm[i].ButtonCharRead;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
 
@@ -409,10 +409,9 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Font.Size  := 8;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].Caption    := 'WRc';
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].AutoSize   := true;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteCommand].OnChange   := @DeviceForm[i].ButtonCharWriteCommand;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
             DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].OnEditingDone := @DeviceForm[i].CharEditingDone;
@@ -426,10 +425,9 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Font.Size  := 8;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].Caption    := 'WRr';
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].AutoSize   := true;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanWriteRequest].OnChange   := @DeviceForm[i].ButtonCharWriteRequest;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
             DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].OnEditingDone := @DeviceForm[i].CharEditingDone;
@@ -442,10 +440,9 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Font.Size  := 8;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].Caption    := 'NOT';
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].AutoSize   := true;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanNotify].OnChange   := @DeviceForm[i].ButtonCharNotify;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
           end;
@@ -455,10 +452,9 @@ begin
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Tag        := (i shl TagPosDev) or (SvIdx shl TagPosSrv) or (ChIdx shl TagPosChr);
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Top        := DeviceFormElements[i].TextBoxCharacteristic[SvIdx][ChIdx].Top;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Left       := NextButtonCoord;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Width      := 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth;
-            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Height     := 20 + FormElementsExtraHeight;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Font.Size  := 8;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].Caption    := 'IND';
+            DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].AutoSize   := true;
             DeviceFormElements[i].ToggleBoxCharProp[SvIdx][ChIdx][CanIndicate].OnChange   := @DeviceForm[i].ButtonCharIndicate;
             NextButtonCoord := NextButtonCoord + 4*DeviceFormPaddingHorizontal + FormElementsExtraWidth + DeviceFormPropPadding;
           end;
@@ -481,9 +477,10 @@ begin
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Parent     := DeviceFormElements[i].Panel[SvIdx];
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Top        := NextElementVertical;
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Left       := 5*DeviceFormPaddingHorizontal;
+              DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Caption    := 'LabelDescriptorUuid';
+              DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Width      := Round(DeviceFormElements[i].Panel[SvIdx].Width * 2 / 3);
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].AutoSize   := false;
-              DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Width      := 248;
-              DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Height     := 18;
+              //DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Height     := 18;
               DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Font.Size  := 10;
               if n = '' then
                 DeviceFormElements[i].LabelDescriptorUuid[SvIdx][ChIdx][DeIdx].Caption  := UpperCase(s)
@@ -498,10 +495,11 @@ begin
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Parent    := DeviceFormElements[i].Panel[SvIdx];
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Top       := NextElementVertical;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Left      := 5*DeviceFormPaddingHorizontal;
+              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Caption   := 'TextBoxDescriptor';
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Font.Size := 10;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].MaxLength := 4;
-              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].AutoSize  := false;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Width     := 56;
+              DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].AutoSize  := false;
               //DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height    := 20;
               DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Color     := clForm;
               NextElementVertical := DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Top + DeviceFormElements[i].TextBoxDescriptor[SvIdx][ChIdx][DeIdx].Height + DeviceFormPaddingVertical div 2;

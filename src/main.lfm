@@ -1,11 +1,11 @@
 object ScanForm: TScanForm
-  Left = 129
-  Height = 840
-  Top = 45
-  Width = 904
-  Caption = 'InsideBlue BLE Tool V0.7.2'
-  ClientHeight = 840
-  ClientWidth = 904
+  Left = 54
+  Height = 690
+  Top = 87
+  Width = 905
+  Caption = 'InsideBlue BLE Tool V0.7.3'
+  ClientHeight = 0
+  ClientWidth = 0
   Color = clWhite
   Constraints.MinHeight = 320
   Icon.Data = {
@@ -2140,7 +2140,7 @@ object ScanForm: TScanForm
   end
   object ScrollBoxDevices: TScrollBox
     Left = 0
-    Height = 712
+    Height = 562
     Top = 128
     Width = 432
     HorzScrollBar.Page = 1
@@ -2231,9 +2231,9 @@ object ScanForm: TScanForm
   end
   object LogOutput: TMemo
     Left = 440
-    Height = 799
+    Height = 649
     Top = 32
-    Width = 456
+    Width = 457
     Anchors = [akTop, akLeft, akRight, akBottom]
     Font.CharSet = ANSI_CHARSET
     Font.Name = 'Courier New'
