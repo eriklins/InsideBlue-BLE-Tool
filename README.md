@@ -1,3 +1,5 @@
+Due to limitations with using the underlying SimpleBLE library as DLL on Windows 11, I did a rewrite of that tool no longer using Lazarus/Freepascal and switched to C with [NAppGUI](https://github.com/frang75/nappgui_src) as cross-plattform SDK and still SimpleBLE but statically linked. See new project [BLE Scout](https://github.com/eriklins/BLE-Scout).
+
 # InsideBlue BLE Tool V0.8
 Welcome to **InsideBlue BLE Tool**, an easy to use Windows BLE application for Bluetooth Low-Energy (BLE) connectivity leveraging the PC’s integrated Bluetooth adapter. It's actually cross-platform, see below for Linux and Max OS support.
 
